@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace RoadWheels.API.Services
 {
-    public class VehicleService(IMongoDatabase database)
+    public class VehicleService(IMongoDatabase database, CountryService countryService)
     {
         private readonly IMongoCollection<Vehicle> _cars = database.GetCollection<Vehicle>("cars");
         private readonly IMongoCollection<Vehicle> _touringBikes = database.GetCollection<Vehicle>("touringBikes");
         private readonly IMongoCollection<Vehicle> _touringMotorcycles = database.GetCollection<Vehicle>("touringMotorcycles");
         private readonly IMongoCollection<Vehicle> _campers = database.GetCollection<Vehicle>("campers");
         private readonly IMongoCollection<Reservation> _reservations = database.GetCollection<Reservation>("reservations");
-        private readonly IMongoCollection<Country> _countries = database.GetCollection<Country>("countries");
+        private readonly CountryService _countryService = countryService;
 
         #region CRUD
         private async Task<List<string>> GetReservedVehicleIdsAsync(VehicleType type, DateTime startDate, DateTime endDate)
@@ -57,6 +57,8 @@ namespace RoadWheels.API.Services
                     Brand = v.Brand,
                     Model = v.Model,
                     Seats = v.Seats,
+                    Transmission = v.Transmission,
+                    FuelConsumption = v.FuelConsumption,
                     PricePerDay = v.PricePerDay,
                     MainImage = v.ImageUrls.FirstOrDefault(),
                     Type = searchData.Type
@@ -99,7 +101,7 @@ namespace RoadWheels.API.Services
         {
             var collection = GetCollectionByType(type);
             await collection.InsertOneAsync(vehicle);
-            await UpdateCountryAsync(vehicle.Country, vehicle.City, 1);
+            await _countryService.UpdateCountryAsync(vehicle.Country, vehicle.City, 1);
             return vehicle;
         }
 
@@ -125,7 +127,7 @@ namespace RoadWheels.API.Services
             var result = await collection.DeleteOneAsync(v => v.Id == id);
 
             if (result.DeletedCount > 0)
-                await UpdateCountryAsync(country, city, -1);
+                await _countryService.UpdateCountryAsync(country, city, -1);
 
             return result.DeletedCount > 0;
         }
@@ -155,20 +157,6 @@ namespace RoadWheels.API.Services
                 VehicleType.Camper => _campers,
                 _ => throw new ArgumentException($"Unknown vehicle type: {type}")
             };
-        }
-
-        private async Task UpdateCountryAsync(string countryName, string cityName, int value)
-        {
-            var filter = Builders<Country>.Filter.Eq(c => c.Name, countryName);
-
-            var update = Builders<Country>.Update
-                .SetOnInsert(c => c.Name, countryName)
-                .SetOnInsert(c => c.Id, ObjectId.GenerateNewId())
-                .Inc($"CityWithVehicles.{cityName}", value);
-
-            var options = new UpdateOptions { IsUpsert = true };
-
-            await _countries.UpdateOneAsync(filter, update, options);
         }
 
     }

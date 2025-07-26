@@ -17,7 +17,7 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
     public async Task<IActionResult> GetAvailableVehiclesByLocation([FromQuery] VehicleSearchDto searchData)
     {
         var vehicles = await _vehicleService.GetAvailableVehiclesByLocationAsync(searchData);
-        if (vehicles == null)
+        if (vehicles.Count==0)
             return NotFound("No Vehicles found at this location");
 
         return Ok(vehicles);
@@ -52,7 +52,7 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         }
     }
 
-    [HttpPut("UpdateVehicle/{type}")]
+    [HttpPut("UpdateVehicle")]
     public async Task<IActionResult> UpdateVehicle(VehicleDetailsDto vehicle)
     {
 
@@ -71,7 +71,7 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         if (result)
             return Ok("Vehicle successfully deleted");
 
-        return BadRequest("THere was an error deleting the vehicle.");
+        return BadRequest("There was an error deleting the vehicle.");
        
     }
 }

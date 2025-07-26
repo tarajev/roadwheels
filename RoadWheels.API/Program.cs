@@ -96,8 +96,12 @@ builder.Services.AddSingleton<IMongoDatabase>(s =>
     var settings = s.GetRequiredService<IOptions<RoadWheelsDatabaseSettings>>();
     return client.GetDatabase(settings.Value.DatabaseName);
 });
+var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<RoadWheelsDatabaseSettings>();
+Console.WriteLine($"MongoDB ConnectionString: {mongoSettings.ConnectionString}");
+Console.WriteLine($"MongoDB DatabaseName: {mongoSettings.DatabaseName}");
 
-builder.Services.AddSingleton<VehicleService>();
+builder.Services.AddScoped<VehicleService>();
+builder.Services.AddScoped<CountryService>();
 
 var app = builder.Build();
 

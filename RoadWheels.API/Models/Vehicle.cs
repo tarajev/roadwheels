@@ -8,7 +8,7 @@ public class Vehicle
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } = null!;
+    public string? Id { get; set; } 
 
     /*
     [BsonElement("type")]
@@ -19,6 +19,15 @@ public class Vehicle
 
     [BsonElement("model")]
     public string Model { get; set; } = null!;
+
+    [BsonElement("year")]
+    public int Year { get; set; }
+
+    [BsonElement("transmission")]
+    public string? Transmission { get; set; } // "automatic" or "manual"
+
+    [BsonElement("fuelConsumption")]
+    public double? FuelConsumption { get; set; }
 
     [BsonElement("seats")]
     public int Seats { get; set; }

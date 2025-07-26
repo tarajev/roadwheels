@@ -1,16 +1,29 @@
+import { unstable_createUseMediaQuery } from '@mui/material';
 import calendarIcon from '../resources/img/calendar-icon.png';
 import locationIcon from '../resources/img/location-icon.png';
 import vehicleIcon from '../resources/img/vehicle-icon.png';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function SearchBar() {
-    const countries = {
+export default function SearchBar({ onSearch, locations }) {
+    const countries2 = {
         USA: ["New York", "Los Angeles", "Chicago"],
         Germany: ["Berlin", "Munich", "Frankfurt"],
         France: ["Paris", "Lyon", "Marseille"]
     };
+
     const [selectedCountry, setSelectedCountry] = useState("");
-    const [selectedCity, setSelectedCity] = useState("");
+    const [selectedCity, setSelectedCity] = useState("City");
+    const [vehicleType, setVehicleType] = useState("Camper");
+    const [pickUpDate, setPickUpDate] = useState("");
+    const [returnDate, setReturnDate] = useState("");
+
+    const handleSearch = () => {
+        if (selectedCountry && vehicleType && pickUpDate && returnDate) {
+            onSearch(selectedCountry, selectedCity, vehicleType, pickUpDate, returnDate);
+        } else {
+            alert("Please fill all fields.");
+        }
+    };
 
     return (
         <div className="absolute grid grid-cols-[45%_45%_10%] gap-4 bottom-[-65px] left-1/2 transform -translate-x-1/2 z-10 bg-white p-4 rounded-md shadow-md w-full sm:w-11/12 md:w-5/6 lg:w-4/5 xl:w-3/4">
@@ -21,18 +34,18 @@ export default function SearchBar() {
                     <div className="grid grid-cols-[55%_45%] gap-4 items-center">
                         {/* Country */}
                         <div className="flex items-center ">
-                            <img src={locationIcon} alt="City" className="w-5 h-5 mr-1" />
+                            <img src={locationIcon} alt="locationIcon" className="w-5 h-5 mr-1" />
                             <select
                                 className="border rounded px-2 py-1 w-full"
                                 value={selectedCountry}
                                 label="Country"
                                 onChange={(e) => {
                                     setSelectedCountry(e.target.value);
-                                    setSelectedCity(countries[e.target.value][0]); // reset city
+                                    setSelectedCity(locations[e.target.value][0]); // reset city
                                 }}
                             >
                                 <option value="" disabled>Country</option>
-                                {Object.keys(countries).map((country) => (
+                                {Object.keys(locations).map((country) => (
                                     <option key={country} value={country}>{country}</option>
                                 ))}
                             </select>
@@ -45,8 +58,9 @@ export default function SearchBar() {
                                 value={selectedCity}
                                 onChange={(e) => setSelectedCity(e.target.value)}
                             >
-                                <option value="" disabled>City</option>
-                                {countries[selectedCountry]?.map((city) => (
+                                <option value="City" disabled>City</option>
+                                <option value=""> All</option>
+                                {locations[selectedCountry]?.map((city) => (
                                     <option key={city} value={city}>{city}</option>
                                 ))}
                             </select>
@@ -58,7 +72,7 @@ export default function SearchBar() {
                     <label className="mb-1">Car Type</label>
                     <div className="flex items-center gap-2">
                         <img src={vehicleIcon} alt="Car Type" className="w-5 h-5" />
-                        <select className="border rounded px-2 py-1 w-full">
+                        <select className="border rounded px-2 py-1 w-full" onChange={(e) => setVehicleType(e.target.value)}>
                             <option value={"Camper"}>Camper</option>
                             <option value={"Car"}>Car</option>
                             <option value={"TouringMotorcycle"}>Touring Motorcycle</option>
@@ -74,7 +88,7 @@ export default function SearchBar() {
                     <label className="mb-1">Pick Up</label>
                     <div className="flex items-center gap-2">
                         <img src={calendarIcon} alt="Pick Up" className="w-5 h-5" />
-                        <input type="date" className="border rounded px-2 py-1 w-full" />
+                        <input onChange={(e) => setPickUpDate(e.target.value)} min={new Date().toISOString().split('T')[0]} type="date" className="border rounded px-2 py-1 w-full" />
                     </div>
                 </div>
 
@@ -82,12 +96,12 @@ export default function SearchBar() {
                     <label className="mb-1">Return</label>
                     <div className="flex items-center gap-2">
                         <img src={calendarIcon} alt="Return" className="w-5 h-5" />
-                        <input type="date" className="border rounded px-2 py-1 w-full" />
+                        <input type="date" min={pickUpDate} disabled={!pickUpDate} onChange={(e) => setReturnDate(e.target.value)} className="border rounded px-2 py-1 w-full" />
                     </div>
                 </div>
             </div>
             <div className="flex items-center mt-4">
-                <button className="bg-accent text-white rounded px-4 py-2 hover:bg-[#C56D43] transition">
+                <button onClick={() => handleSearch()} className="bg-accent text-white rounded px-4 py-2 hover:bg-[#C56D43] transition">
                     Search
                 </button>
             </div>
