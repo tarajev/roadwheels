@@ -45,13 +45,12 @@ export default function Header({ overlayActive, overlayHandler }) {
       <div className={`pt-16 sticky top-0 z-50`}>
         {showLogin && <div className="overlay" onClick={handleLoginClick}></div>}
         {showLogin && <DrawLoginForm showRegistration={showRegistration} exitRegistration={exitRegistration} toggleRegistration={toggleRegistration} handleLoginClick={handleLoginClick} />}
-        <nav className="absolute shadow-xl top-0 left-0 w-full border-b bg-[#F4F1EC] md:flex-row md:flex-nowrap md:justify-start flex items-center p-8">
+        <nav className="absolute shadow-xl top-0 left-0 w-full border-b bg-[#F7F5E8] md:flex-row md:flex-nowrap md:justify-start flex items-center p-8">
           <div className="w-full mx-auto items-center flex justify-between md:flex-nowrap flex-wrap md:px-10 px-2">
             <div className="relative flex hidden lg:block pr-4"> {/*Search postaje deo BurgerMenu za manje ekrane */}
-              Tara gaser :)
             </div>
-            <Link route="/" className="!no-underline absolute left-1/2 transform -translate-x-1/2 block font-playfair sm:text-3xl font-semibold !text-[#07090D] justify-self-center self-center mx-auto">
-              readfeed.
+            <Link route="/" className="!no-underline absolute block font-cambria sm:text-3xl ml-12 font-semibold !text-orange justify-self-start">
+              RoadWheels
             </Link>
             <span className="block lg:hidden ml-auto">
               <BurgerMenu preventTab={overlayActive} icon={iconBurger} listItemArray={burgerMenuItems} size={5} />

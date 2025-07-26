@@ -6,14 +6,15 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        playfair: ["Playfair Display", "serif"],
+        cambria: ["Cambria", "serif"],
+        lobster: ['Lobster', 'cursive']
       },
       colors: {
-        primary: "#F4F1EC",  // Svetlo bež
-        secondary: "#ECE9E4", // Bež
+        beige: "#F7F5E8",  // Svetlo bež
         dark: "#07090D",      // Varijanta crne
-        light: "#FDFDFE",     // Skoro bela
-        accent: "#BF2734"     // Tamno crvena
+        green: "#669676",     // Skoro bela
+        accent: "#D4A373",    // Tamno crvena
+        orange: "#C56D43"
       }
     },
   },

@@ -58,9 +58,9 @@ export function Page({ overlayActive, overlayHandler, children, loading = false,
     <>
       <DrawLoadingScreen loading={pageLoading} />
       <PreloadHandler />
-      <div className='bg-[#F4F1EC] min-h-screen'>
+      <div className='bg-[#F7F5E8] min-h-screen'>
         {showHeader && <Header overlayActive={overlayActive} overlayHandler={overlayHandler} />}
-        <div className="py-12  shadow-lg h-fit mx-auto max-w-3xl lg:max-w-6xl xl:max-w-7xl " style={{ minHeight: `calc(100vh - 150px)` }}>
+        <div className=" py-8 shadow-lg h-fit w-11/12  mx-auto" style={{ minHeight: `calc(100vh - 150px)` }}>
           {children}
         </div>
         <Footer />

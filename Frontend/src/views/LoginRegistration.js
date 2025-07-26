@@ -19,7 +19,8 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
   const [password, setPassword] = useState('');
 
   const [fullName, setFullName] = useState('');
-  const [newspaper, setNewspaper] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneError, setPhoneError] = useState(false);
 
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [emailTouched, setEmailTouched] = useState(false);
@@ -69,7 +70,7 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
     if (!email || !password || !confirmPassword || !isEmailValid || !passwordMatch) {
       return true;
     }
-    if (userTypeAuthor && (!fullName && !newspaper)) {
+    if (userTypeAuthor && (!fullName && !phoneNumber)) {
       return true;
     }
     else if (!userTypeAuthor && !userName)
@@ -82,8 +83,16 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
     setFullName(e.target.value);
   };
 
-  const handleNewspaperChange = (e) => {
-    setNewspaper(e.target.value);
+  const handlePhoneNumberChange = (e) => {
+    const value = e.target.value;
+    setPhoneNumber(value);
+
+    const phoneRegex = /^\+?[0-9]{6,15}$/;
+    if (!phoneRegex.test(value)) {
+      setPhoneError(true);
+    } else {
+      setPhoneError(false);
+    }
   };
 
 
@@ -123,7 +132,7 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
         email: email,
         password: password,
         fullName: fullName,
-        newspaper: newspaper
+        phoneNumber: phoneNumber
       })
         .then(response => {
           exitRegistration();
@@ -163,26 +172,21 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
             <h1 className="block font-playfair sm:text-3xl font-semibold text-[#07090D] justify-self-center self-center mx-auto">readfeed.</h1>
           </div>
           <form className="mt-4" onSubmit={handleRegisterSubmit}>
-            <div className='flex flex-row gap-4 justify-center p-2'>
-              <IconButtonCard icon={userIcon} text={"I read"} selected={!userTypeAuthor} onClick={() => setUserTypeAuthor(false)}></IconButtonCard>
-              <IconButtonCard icon={authorIcon} text={"I write"} selected={userTypeAuthor} onClick={() => setUserTypeAuthor(true)}></IconButtonCard>
-            </div>
-            {userTypeAuthor && (
-              <FormInput
-                text="Full Name"
-                required
-                value={fullName}
-                onChange={handleFullNameChange}
-              />
-            )}
-            {userTypeAuthor && (
-              <FormInput
-                text="Newspaper"
-                required
-                value={newspaper}
-                onChange={handleNewspaperChange}
-              />
-            )}
+            <FormInput
+              text="Full Name"
+              required
+              value={fullName}
+              onChange={handleFullNameChange}
+            />
+            <FormInput
+              text="Phone Number"
+              type="tel"
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
+              required
+              alertCond={!!phoneError}
+              alertText={phoneError}
+            />
             {!userTypeAuthor && (
               <FormInput
                 text="Username"
