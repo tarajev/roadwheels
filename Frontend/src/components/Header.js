@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Input, Link } from '../components/BasicComponents';
+import { Input, Link } from './BasicComponents';
 import { DrawLogin, DrawRegistration } from "../views/LoginRegistration";
 import iconBurger from "../resources/img/burger-menu.png"
 import searchIcon from "../resources/img/icon-search.png"

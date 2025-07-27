@@ -12,9 +12,9 @@ module.exports = {
       colors: {
         beige: "#F7F5E8",  // Svetlo bež
         dark: "#07090D",      // Varijanta crne
-        green: "#669676",     // Skoro bela
-        accent: "#D4A373",    // Tamno crvena
-        orange: "#C56D43"
+        green: "#669676",     // zelena
+        accent: "#D4A373",    // svetlo narandzasta
+        orange: "#C56D43"     // tamnija narandzasta
       }
     },
   },

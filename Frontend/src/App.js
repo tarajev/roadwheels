@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AuthorizationContext from './context/AuthorizationContext';
 import './App.css';
 import MainPage from "./views/MainPage"
+import VehiclePage from "./views/VehiclePage"
 import NotFound from './views/NotFound';
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
+          <Route path="/vehicle/:type/:vehicleId" element={<VehiclePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

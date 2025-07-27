@@ -20,15 +20,24 @@ export default function DrawMainPage() {
     TouringBike: "Touring Bike"
   };
 
+  const take = 12;
   const [vehicles, setVehicles] = useState([]);
   const [countries, setCountries] = useState([]);
   const [skip, setSkip] = useState(0);
   const [showNotFoundMessage, setShowNotFoundMessage] = useState(false);
   const [vehicleType, setVehicleType] = useState("");
+  const [moreAvailable, setMoreAvailable] = useState(true);
+  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useState(null);
 
   useEffect(() => {
     getAllCountries();
   }, [])
+
+  useEffect(() => {
+    if (searchParams)
+      searchVehicles(searchParams.country, searchParams.city, searchParams.vehicleType, searchParams.pickUpDate, searchParams.returnDate);
+  }, [page])
 
   const getAllCountries = async () => {
     var route = "Country/GetAvailableCountries";
@@ -47,8 +56,10 @@ export default function DrawMainPage() {
   }
 
   const searchVehicles = async (country, city, vehicleType, pickUpDate, returnDate) => {
-    var route = "Vehicle/GetAvailableVehiclesByLocation";
     setVehicleType(vehicleTypeDisplayNames[vehicleType]);
+    setSearchParams({ country, city, vehicleType, pickUpDate, returnDate });
+
+    var route = "Vehicle/GetAvailableVehiclesByLocation";
     await axios.get(APIUrl + route, {
       params: {
         country: country,
@@ -56,11 +67,18 @@ export default function DrawMainPage() {
         type: vehicleType,
         startDate: pickUpDate,
         endDate: returnDate,
-        skip: skip,
-        take: 12
+        skip: page * take,
+        take: take + 1
       }
     }).then(result => {
       setShowNotFoundMessage(false);
+      //setVehicles(result.data);
+      if (result.data.length > take) {
+        setMoreAvailable(true);
+        result.data.pop();
+      }
+      else
+        setMoreAvailable(false);
       setVehicles(result.data);
     })
       .catch(error => {
@@ -91,6 +109,28 @@ export default function DrawMainPage() {
         }
         {showNotFoundMessage ? `We currently don't have any ${vehicleType}s available at the requested location. Please try a different search.` : ""}
       </div>
+
+      {vehicles.length > 0 &&
+        <div className='flex justify-center mt-10 items-center gap-2'>
+          <button
+            onClick={() => {
+              if (page > 0)
+                setPage((prev) => prev - 1);
+            }}
+            disabled={page == 0}
+            className="p-2 place-self-center bg-accent rounded-md shadow-md text-white flex items-center gap-2 hover:bg-orange disabled:opacity-50 disabled:hover:bg-accent "
+          >Prev
+          </button>
+          <div className='text-lg font-cambria'>{page + 1}</div>
+          <button
+            onClick={() => {
+              setPage((prev) => prev + 1);
+            }}
+            disabled={!moreAvailable}
+            className="p-2 place-self-center bg-accent rounded-md text-white flex items-center gap-2 hover:bg-orange disabled:opacity-50 disabled:hover:bg-accent"
+          >Next
+          </button>
+        </div>}
 
     </Page>
   );

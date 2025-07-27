@@ -75,7 +75,7 @@ export function Button({ type, onClick, disabled, preventTab, className, childre
       type={type}
       disabled={disabled}
       tabIndex={preventTab ? -1 : 0}
-      className={`focus:ring ring-violet-900 color-button text-white outline-none shadow-md w-fit ${className}`}
+      className={`hover:bg-orange bg-accent  text-white outline-none shadow-md w-fit ${className}`}
       onClick={onClick}
     >
       {children}
@@ -163,7 +163,7 @@ export function FormButton({ text, disabled, onClick, loading, className }) {
         type="submit"
         disabled={disabled}
         onClick={onClick}
-        className={`w-full px-4 py-2 text-sm text-white text-center bg-accent rounded-md ${!disabled ? "hover:bg-[#a9222f]" : "!bg-gray-400 opacity-80 cursor-not-allowed"} ${className}`}
+        className={`w-full px-4 py-2 text-sm text-white text-center bg-accent rounded-md ${!disabled ? "hover:bg-orange" : "opacity-80 cursor-not-allowed"} ${className}`}
       >
         <div className='flex items-center justify-center text-md font-medium'>
           {loading && <CircularProgress size={15} className='mr-2' sx={{ 'color': 'white' }} />}{text}
@@ -319,7 +319,7 @@ export function Password({ text, textClass, labelClass, required, visibility, in
   return (
     <label className={`block mt-3 ${inline ? "flex flex-nowrap items-center" : ""}`}>
       <div className={`${inline ? "mr-2" : ""} ${labelClass}`}>
-        <span className={`text-md text-gray-800 ${textClass}`}>
+        <span className={`text-md text-gray-900 ${textClass}`}>
           {text}
         </span>
         <span className="text-md text-red-600">
@@ -333,7 +333,7 @@ export function Password({ text, textClass, labelClass, required, visibility, in
           spellCheck={false}
           onChange={onChange}
           onBlur={onBlur}
-          className={`block w-full pr-8 mt-1 rounded-md text-black bg-gray-700 border border-gray-800 p-2 outline-none ${alertCond ? "ring ring-accent" : ""} ${className}`}
+          className={`block w-full pr-8 mt-1 rounded-md text-black border border-gray-800 p-2 outline-none ${alertCond ? "ring ring-accent" : ""} ${className}`}
         />
         <img
           src={visibility ? (showPassword ? eyeSlashed : eye) : ""}

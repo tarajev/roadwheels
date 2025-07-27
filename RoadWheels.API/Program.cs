@@ -1,6 +1,7 @@
 
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -112,10 +113,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseCors("CORS");
-app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

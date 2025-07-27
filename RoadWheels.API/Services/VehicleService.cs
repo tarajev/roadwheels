@@ -46,7 +46,7 @@ namespace RoadWheels.API.Services
                 filter &= !filterBuilder.In(v => v.Id, reservedVehicleIds);
 
             var collection = GetCollectionByType(searchData.Type);
-            var availableVehicles = await collection.Find(filter).Skip(searchData.Skip).Limit(searchData.Take).ToListAsync();
+            var availableVehicles = await collection.Find(filter).SortByDescending(v => v.Year).Skip(searchData.Skip).Limit(searchData.Take).ToListAsync();
 
             var result = availableVehicles.Select(v =>
             {
@@ -89,6 +89,8 @@ namespace RoadWheels.API.Services
                 Brand = vehicle.Brand,
                 Model = vehicle.Model,
                 Seats = vehicle.Seats,
+                Transmission = vehicle.Transmission,
+                FuelConsumption = vehicle.FuelConsumption,
                 PricePerDay = vehicle.PricePerDay,
                 ImageUrls = vehicle.ImageUrls,
                 Description = vehicle.Description,

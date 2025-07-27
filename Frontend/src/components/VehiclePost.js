@@ -2,10 +2,13 @@ import car from '../resources/img/car.webp'
 import seatIcon from '../resources/img/seat-icon.png'
 import fuelIcon from '../resources/img/fuel-icon.png'
 import gearIcon from '../resources/img/gearbox-icon.png'
+import { useNavigate } from 'react-router-dom'
+
 export default function VehiclePost({ vehicle, country, city }) {
+  const navigate = useNavigate();
 
   const handleOnClick = () => {
-
+    navigate(`/vehicle/${vehicle.type}/${vehicle.id}`);
   }
 
   return (
@@ -13,7 +16,7 @@ export default function VehiclePost({ vehicle, country, city }) {
       <div className="flex w-fit h-fit mb-2 text-bold rounded-lg hover:bg-white cursor-pointer" onClick={() => handleOnClick()}>
         <img className="object-contain h-30" src={car} /> {/* da se izmeni ako se photos izmeni */}
       </div>
-      <div className="grid mb-2 md:text-lg gap-4">
+      <div className="grid mb-2 gap-4">
         <span className="text-dark text-xl font-bold font-cambria">{vehicle.brand + " " + vehicle.model}</span>
         <div className='flex text-dark gap-4 font-semibold sm:text-md md:text-lg opacity-80 font-cambria'>
           <span className="flex items-center">

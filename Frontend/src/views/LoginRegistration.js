@@ -169,7 +169,7 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
             onClick={exitRegistrationForm}
           />
           <div className="flex items-center justify-center">
-            <h1 className="block font-playfair sm:text-3xl font-semibold text-[#07090D] justify-self-center self-center mx-auto">readfeed.</h1>
+            <h1 className="block font-cambria sm:text-3xl font-semibold text-orange justify-self-center self-center mx-auto">RoadWheels</h1>
           </div>
           <form className="mt-4" onSubmit={handleRegisterSubmit}>
             <FormInput
@@ -213,7 +213,7 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
               visibility
               value={password}
               onChange={handlePasswordChange}
-              className={"bg-secondary !text-black"}
+              className={"!text-black"}
             />
             <Password
               text="Confirm Password"
@@ -223,7 +223,7 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
               onBlur={handlePasswordBlur}
               alertCond={!passwordMatch && passwordTouched}
               alertText="Passwords do not match!"
-              className={"!bg-secondary !text-black"}
+              className={"!text-black"}
             />
             <FormButton
               loading={isLoading}
@@ -313,8 +313,8 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
         let now = new Date();
         now.setHours(now.getHours() + 6);
 
-        localStorage.setItem('ReadfeedUser', JSON.stringify(user));
-        localStorage.setItem('ReadfeedExpiryDate', now);
+        localStorage.setItem('RoadWheelsUser', JSON.stringify(user));
+        localStorage.setItem('RoadWheelsExpiryDate', now);
 
         handleLoginClick();
       })
@@ -364,7 +364,7 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
           />
 
           <div className="flex items-center justify-center">
-            <h1 className="block font-playfair sm:text-3xl font-semibold text-[#07090D] justify-self-center self-center mx-auto">readfeed.</h1>
+            <h1 className="block font-cambria sm:text-3xl font-semibold text-orange justify-self-center self-center mx-auto">RoadWheels</h1>
           </div>
 
           <form onSubmit={handleLoginSubmit} className="mt-4">
@@ -383,7 +383,7 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
               visibility
               value={password}
               onChange={handlePasswordChange}
-              className={"bg-secondary text-gray-900"}
+              className={""}
             />
 
             <FormButton
