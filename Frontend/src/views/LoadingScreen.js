@@ -1,6 +1,4 @@
-import React from 'react';
 import { useDebounce } from 'use-debounce';
-import logo from '../resources/img/neowatchlogo.png';
 import { LinearProgress } from '@mui/material';
 import '../assets/colors.css';
 import '../assets/animations.css';
@@ -11,11 +9,11 @@ export default function DrawLoadingScreen({ loading }) {
   return (
     <div
       style={{ zIndex: 999 }}
-      className={`flex ${!loading && !hideComponent ? "hidden" : ""} ${loading ? "" : "fade-out-loading"} fixed bg-gradient-to-br from-orange-50 to-gray-100 items-center justify-center h-screen w-screen`}
+      className={`flex ${!loading && !hideComponent ? "hidden" : ""} ${loading ? "" : "fade-out-loading"} font-cambria fixed bg-[#f2f1e6] items-center justify-center h-screen w-screen`}
     >
-      <div className="w-full p-8 color-primary">
+      <div className="w-full p-8">
         <div className='flex justify-center'>
-        <div className=" font-playfair md:text-4xl font-semibold text-[#07090D] mx-auto">readfeed.</div>
+        <div className=" font-playfair md:text-4xl font-semibold text-[#07090D] mx-auto">RoadWheels</div>
         </div>
         <LinearProgress className="rounded-xl" color="inherit" />
       </div>

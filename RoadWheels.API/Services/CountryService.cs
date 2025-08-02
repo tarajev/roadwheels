@@ -1,7 +1,5 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-using RoadWheels.API.DTOs;
-using RoadWheels.API.Exceptions;
 using RoadWheels.API.Models;
 
 namespace RoadWheels.API.Services

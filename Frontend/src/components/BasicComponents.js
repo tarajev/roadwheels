@@ -58,7 +58,7 @@ export function Page({ overlayActive, overlayHandler, children, loading = false,
     <>
       <DrawLoadingScreen loading={pageLoading} />
       <PreloadHandler />
-      <div className='bg-[#F7F5E8] min-h-screen'>
+      <div className='bg-[#F7F5E8] min-h-screen font-cambria'>
         {showHeader && <Header overlayActive={overlayActive} overlayHandler={overlayHandler} />}
         <div className=" py-8 shadow-lg h-fit w-11/12  mx-auto" style={{ minHeight: `calc(100vh - 150px)` }}>
           {children}
@@ -396,6 +396,6 @@ export function EditableInput({ initialValue, preventTab, label, setValue }) {
 }
 
 export function GetMonthName(monthNumber) {
-  const months = ["Januar", "Februar", "Mart", "April", "Maj", "Jun", "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   return months[monthNumber];
 }

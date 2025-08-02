@@ -19,58 +19,58 @@
 }
 
 .outline-indigo {
-  outline-color: #5700a2;
+  outline-color: #c56d43;
 }
 
 .outline-indigo:hover {
-  outline-color: #7832b4;
+  outline-color: #c56d43;
 }
 
 .outline-indigo:focus {
-  outline-color: #7832b4;
+  outline-color: #c56d43;
 }
 
 .color-button {
-  background-color: #5700a2;
+  background-color: #c56d43;
   border-width: 1px;
-  border-color: #5700a2;
+  border-color: #c56d43;
 }
 
 .color-button:hover {
-  background-color: #7832b4;
+  background-color: #c56d43;
   border-width: 1px;
-  border-color: #5700a2;
+  border-color: #c56d43;
 }
 
 .color-button:active {
-  background-color: #5700a2;
+  background-color: #c56d43;
   border-width: 1px;
-  border-color: #5700a2;
+  border-color: #c56d43;
   color: rgb(200 200 200)
 }
 
 .color-button:disabled {
   background-color: rgb(17 24 39);
-  border: 1px solid #7832b4;
+  border: 1px solid #c56d43;
   color: rgb(130 137 150);
 }
 
 .color-button-sel {
-  background-color: #7832b4;
-  border: 1px solid #3C0071;
+  background-color: #c56d43;
+  border: 1px solid #c56d43;
   color: white;
   cursor: default;
 }
 
 .color-button-unsel {
-  background-color: #3C0071;
-  border: 1px solid #3C0071;
+  background-color: #c56d43;
+  border: 1px solid #c56d43;
   color: lightgray;
 }
 
 .color-button-unsel:hover {
-  background-color: #7832b4;
-  border-color: #3C0071;
+  background-color: #F7F5E8;
+  border-color: #c56d43;
   color: white;
   animation: bg-appear .3s;
 }
@@ -80,39 +80,39 @@
 }
 
 .color-button-list {
-  background-color: black;
-  color: white;
+  background-color: white;
+  color: black;
 }
 
 .color-button-list:hover {
-  background-color: #5700a2;
-  color: black;
+  background-color: #c56d43;
+  color: white;
   animation: bg-appear .2s;
 }
 
 .color-button-list:not(hover) {
-  background-color: black;
+  background-color: #d4a373;
   color: white;
   animation: bg-disappear .2s;
 }
 
 .color-button-list:active {
-  background-color: #5700a2;
-  color: black;
+  background-color: #c56d43;
+  color: white;
 }
 
 .color-button-list:focus {
-  outline: 1px solid #5700a2;
+  outline: 1px solid #c56d43;
 }
 
 .color-button-list:disabled {
-  background-color: rgb(229 231 235);
+  background-color: lightgray;
   color: white;
   animation: none;
 }
 
 .color-button-taken:hover {
-  background-color: #5700a2;
+  background-color: #c56d43;
   color: black;
 }
 
@@ -133,7 +133,7 @@
 }
 
 .color-button-darker:hover {
-  background-color: #7832b4;
+  background-color: #c56d43;
   border-width: 1px;
-  border-color: #5700a2;
+  border-color: #c56d43;
 }

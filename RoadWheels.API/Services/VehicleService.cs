@@ -1,10 +1,6 @@
-using MongoDB.Bson;
 using MongoDB.Driver;
 using RoadWheels.API.DTOs;
-using RoadWheels.API.Exceptions;
 using RoadWheels.API.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace RoadWheels.API.Services
 {
@@ -77,7 +73,6 @@ namespace RoadWheels.API.Services
 
         public async Task<VehicleDetailsDto?> GetVehicleDetailsByIdAsync(VehicleType type, string id)
         {
-
             var collection = GetCollectionByType(type);
             var vehicle = await collection.Find(v => v.Id == id).FirstOrDefaultAsync();
 
@@ -149,7 +144,7 @@ namespace RoadWheels.API.Services
             return !conflictingReservations;
         }
 
-        private IMongoCollection<Vehicle> GetCollectionByType(VehicleType type)
+        public IMongoCollection<Vehicle> GetCollectionByType(VehicleType type)
         {
             return type switch
             {
@@ -160,6 +155,5 @@ namespace RoadWheels.API.Services
                 _ => throw new ArgumentException($"Unknown vehicle type: {type}")
             };
         }
-
     }
 }
