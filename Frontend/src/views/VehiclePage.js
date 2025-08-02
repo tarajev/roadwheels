@@ -21,6 +21,11 @@ export default function VehiclePage() {
   const [overlayActive, setOverlayActive] = useState(false);
   const [vehicle, setVehicle] = useState([]);
 
+  // Reservation data
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [reservations, setReservations] = useState([]);
+
   const settings = {
     dots: true,
     infinite: false,
@@ -30,8 +35,41 @@ export default function VehiclePage() {
     arrows: true,
   };
 
+  const handleDateSelect = (date) => {
+    if (!startDate || (startDate && endDate)) {
+      setStartDate(date);
+      setEndDate(null);
+    }
+    else if (startDate && !endDate) {
+      if (date >= startDate) {
+        setEndDate(date);
+      }
+      else {
+        setStartDate(date);
+        setEndDate(null);
+      }
+    }
+  };
+
+  const getVehicleReservations = async () => {
+    await axios.get(APIUrl + `Reservation/GetReservationsForVehicle/${vehicleId}`)
+      .then(response => {
+        console.log(response);
+        const parsed = response.data.map(r => {
+          const start = new Date(r.startDate);
+          const end = new Date(r.endDate);
+          start.setHours(0, 0, 0, 0);
+          end.setHours(0, 0, 0, 0);
+          return { start, end };
+        });
+        setReservations(parsed);
+      })
+      .catch(error => console.error(error));
+  };
+
   useEffect(() => {
     getVehicleDetails();
+    getVehicleReservations();
   }, [])
 
   const getVehicleDetails = async () => {
@@ -93,8 +131,8 @@ export default function VehiclePage() {
       <div className='p-2 flex flex-col mx-auto w-fit gap-5 items-center bg-[#f2f1e6] shadow-xl border border-[#c56d43] rounded-xl'>
         <p className='text-4xl font-semibold opacity-50'>Looking to book this vehicle?</p>
         <div className='flex gap-5 w-[52rem]'>
-          <CalendarMonth />
-          <CalendarMonth offset={1} />
+          <CalendarMonth startDate={startDate} endDate={endDate} onDateSelect={handleDateSelect} reservations={reservations} />
+          <CalendarMonth startDate={startDate} endDate={endDate} onDateSelect={handleDateSelect} reservations={reservations} offset={1} />
         </div>
         <Button className="py-3 px-16 h-fit rounded-lg text-xl">Book</Button>
         <div className='flex flex-col text-sm text-[#c56d43]'>
@@ -102,6 +140,7 @@ export default function VehiclePage() {
           <p className='mx-auto'>Please note that cancellations must be made at least 2 days prior to the reservation date.</p>
           <p className='mx-auto'>If a vehicle remains reserved under your name and you fail to pick it up, you will still be charged.</p>
         </div>
+        {startDate && <p>Selected: {startDate.toDateString()} {endDate && `→ ${endDate.toDateString()}`}</p>}
       </div>
     </Page>
   );

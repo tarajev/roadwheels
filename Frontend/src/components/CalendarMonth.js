@@ -1,70 +1,103 @@
-import { useState } from 'react'
 import { GetMonthName } from './BasicComponents';
 
-export default function CalendarMonth({ setJSDate, setDate, offset = 0, children }) { 
+export default function CalendarMonth({ offset = 0, children, startDate, endDate, reservations, onDateSelect }) {
   return (
     <div className='pt-2 h-fit border-y-2 rounded-lg grid col-span-1 shadow-md w-full bg-gray-50'>
-      <div className='flex flex-wrap justify-center w-full h-fit bg-accent'>
+      <div className='flex flex-wrap justify-center w-full h-fit bg-[#669676] text-white'>
         <p>{GetMonthName((new Date().getMonth() + offset) % 12)} {new Date().getFullYear()}.</p>
       </div>
       <ul className='p-2 m-2 grid grid-cols-7 gap-0.5 justify-center text-center h-fit rounded-md bg-gray-50'>
-        <li key={'Pon'} className='shadow-md'>Mon</li>
-        <li key={'Uto'} className='shadow-md'>Tue</li>
-        <li key={'Sre'} className='shadow-md'>Wed</li>
-        <li key={'Cet'} className='shadow-md'>Thu</li>
-        <li key={'Pet'} className='shadow-md'>Fri</li>
-        <li key={'Sub'} className='shadow-md'>Sat</li>
-        <li key={'Ned'} className='shadow-md'>Sun</li>
-        <ListDays setJSDate={setJSDate} setDate={setDate} offset={offset} />
+        <li key={'Mon'} className='shadow-md'>Mon</li>
+        <li key={'Tue'} className='shadow-md'>Tue</li>
+        <li key={'Wed'} className='shadow-md'>Wed</li>
+        <li key={'Thu'} className='shadow-md'>Thu</li>
+        <li key={'Fri'} className='shadow-md'>Fri</li>
+        <li key={'Sat'} className='shadow-md'>Sat</li>
+        <li key={'Sun'} className='shadow-md'>Sun</li>
+        <ListDays
+          offset={offset}
+          startDate={startDate}
+          endDate={endDate}
+          onDateSelect={onDateSelect}
+          reservations={reservations}
+        />
       </ul>
       {children}
     </div>
   );
 }
 
-function ListDays({ setJSDate, setDate, offset = 0 }) {
-  const [selectedDay, setSelectedDay] = useState(null);
+function ListDays({ offset = 0, startDate, endDate, onDateSelect, reservations = [] }) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
-  const month = currentMonth + offset % 12;
-  const currentDay = currentDate.getDate();
+  const baseDate = new Date();
+  const year = baseDate.getFullYear();
+  const currentMonth = baseDate.getMonth();
+  const month = (currentMonth + offset) % 12;
+
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const adjustedFirstDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
 
-  // Korekcija da prvi dan krene od Ponedeljka, gde je 0 index ponedeljka
-  const adjustedFirstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const emptyCells = Array.from({ length: adjustedFirstDay });
 
-  const handleClick = (day) => {
-    {
-      setSelectedDay(selected => selected === day ? null : day);
-      if (setJSDate)
-        setJSDate(new Date(year, month, day));
-      if (setDate)
-        setDate({day: new Date().getDate(), month: new Date().getMonth(), year: new Date().getFullYear()});
-    }
+  const normalize = (d) => { 
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
   };
 
-  const daysArray = Array.from({ length: daysInMonth }, (_, index) => index + 1);
-  const emptyCells = Array.from({ length: adjustedFirstDayOfMonth }, (_, index) => index);
+  const isReserved = (d) => reservations.some(r => d >= r.start && d <= r.end);
+  
+  const isSelected = (d) =>
+    startDate 
+    && ((endDate && d >= normalize(startDate) && d <= normalize(endDate)) 
+    || (!endDate && d.getTime() === normalize(startDate).getTime()));
+
+  const findConflict = (start, end) => {
+    const s = normalize(start), e = normalize(end);
+    return reservations.find(r => r.start > s && r.start < e) || null;
+  };
+
+  const handleClick = (day) => {
+    const d = normalize(new Date(year, month, day));
+
+    if (!startDate || endDate || d < startDate) return onDateSelect(d);
+
+    const conflict = findConflict(startDate, d);
+    if (conflict) {
+      const lastFree = new Date(conflict.start);
+      lastFree.setDate(lastFree.getDate() - 1);
+      return onDateSelect(lastFree);
+    }
+
+    onDateSelect(d);
+  };
 
   return (
     <>
-      {emptyCells.map((index) => (
-        <li key={'empty_' + index}></li>
-      ))}
+      {emptyCells.map((_, i) => <li key={`empty_${i}`} />)}
+      {daysArray.map((day) => {
+        const d = normalize(new Date(year, month, day));
+        const reserved = isReserved(d);
+        const disabled = (offset === 0 && d <= today) || reserved;
 
-      {daysArray.map((day) => (
-        <button
-          key={`${day}_${month}`}
-          disabled={day < currentDay + 1 && !offset}
-          onClick={() => handleClick(day)}
-          className={`py-1 ${selectedDay == day ? "ring-2 ring-red-600" : ""} flex color-button-list items-center justify-center shadow-md ${month === currentMonth && day === currentDay ? 'ring-1 ring-black' : ''}`}
-        >
-          <p>{day}</p>
-        </button>
-      ))}
+        return (
+          <button
+            key={`${day}_${month}`}
+            disabled={disabled}
+            onClick={() => handleClick(day)}
+            className={`py-1 flex color-button-list items-center justify-center shadow-md 
+              ${isSelected(d) ? "!bg-[#669676]" : ""} 
+              ${reserved ? "!bg-[#c54d43] !text-white cursor-not-allowed" : ""} 
+              ${d.getTime() === today.getTime() ? "ring-1 ring-black" : ""}`}
+          >
+            {day}
+          </button>
+        );
+      })}
     </>
   );
 }
