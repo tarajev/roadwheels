@@ -43,28 +43,36 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, reservations =
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const emptyCells = Array.from({ length: adjustedFirstDay });
 
-  const normalize = (d) => { 
+  const normalize = (d) => {
     const x = new Date(d);
     x.setHours(0, 0, 0, 0);
     return x;
   };
 
   const isReserved = (d) => reservations.some(r => d >= r.start && d <= r.end);
-  
+
   const isSelected = (d) =>
-    startDate 
-    && ((endDate && d >= normalize(startDate) && d <= normalize(endDate)) 
-    || (!endDate && d.getTime() === normalize(startDate).getTime()));
+    startDate
+    && ((endDate && d >= normalize(startDate) && d <= normalize(endDate))
+      || (!endDate && d.getTime() === normalize(startDate).getTime()));
 
   const findConflict = (start, end) => {
-    const s = normalize(start), e = normalize(end);
-    return reservations.find(r => r.start > s && r.start < e) || null;
+    const s = normalize(start);
+    const e = normalize(end);
+
+    const futureReservations = reservations
+      .filter(r => r.start > s && r.start <= e)
+      .sort((a, b) => a.start - b.start);
+
+    return futureReservations.length > 0 ? futureReservations[0] : null;
   };
 
   const handleClick = (day) => {
     const d = normalize(new Date(year, month, day));
 
-    if (!startDate || endDate || d < startDate) return onDateSelect(d);
+    if (!startDate || endDate || d < startDate) {
+      return onDateSelect(d);
+    }
 
     const conflict = findConflict(startDate, d);
     if (conflict) {

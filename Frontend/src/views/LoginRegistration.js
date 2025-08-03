@@ -162,7 +162,7 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
   return (
     <div className="overlay show">
       <div className="sm:flex sm:items-center hidescrollbar sm:justify-center h-screen overflow-y-auto">
-        <div ref={formRef} className='w-full max-w-sm p-6 bg-secondary mx-auto rounded-md shadow-2xl fade-in'>
+        <div ref={formRef} className='w-full max-w-sm p-6 bg-white mx-auto rounded-md shadow-2xl fade-in'>
           <Exit
             blue
             className="ml-auto text-sm w-4"
@@ -356,7 +356,7 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
   return (
     <div className="overlay show">
       <div className="flex items-center justify-center h-screen">
-        <div ref={formRef} className='w-full max-w-sm p-6 bg-primary rounded-md shadow-2xl fade-in'>
+        <div ref={formRef} className='w-full max-w-sm p-6 bg-white rounded-md shadow-2xl fade-in'>
           <Exit
             blue
             className="ml-auto text-sm w-5"

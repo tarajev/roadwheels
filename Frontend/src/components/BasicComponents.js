@@ -75,7 +75,11 @@ export function Button({ type, onClick, disabled, preventTab, className, childre
       type={type}
       disabled={disabled}
       tabIndex={preventTab ? -1 : 0}
-      className={`hover:bg-orange bg-accent  text-white outline-none shadow-md w-fit ${className}`}
+      className={`
+        ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-accent hover:bg-orange'}
+        text-white outline-none shadow-md w-fit 
+        ${className}
+      `}
       onClick={onClick}
     >
       {children}

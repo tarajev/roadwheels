@@ -10,6 +10,7 @@ namespace RoadWheels.API.Services
     {
         private readonly VehicleService _vehicleService = service;
         private readonly IMongoCollection<Reservation> _reservations = database.GetCollection<Reservation>("reservations");
+        //private readonly IMongoCollection<User> _users = database.GetCollection<User>("users"); // TODO: srediti
 
         public async Task<List<Reservation>> GetReservationsForVehicle(string vehicleId)
         {
@@ -39,12 +40,19 @@ namespace RoadWheels.API.Services
                 .FirstOrDefaultAsync()
                 ?? throw new NotFoundException("No vehicle found with the provided ID.");
 
+            // TODO: srediti
+            // User user = await _users
+            //     .Find(u => u.Id == reservation.UserId)
+            //     .FirstOrDefaultAsync()
+            //     ?? throw new NotFoundException("No user found with the provided ID.");
+
             var totalDaysReserved = (reservation.EndDate - reservation.StartDate).Days + 1;
 
             Reservation newReservation = new()
             {
                 VehicleId = reservation.VehicleId!,
-                UserId = ObjectId.Parse("000000000000000000000000").ToString(), // TODO: Zameni ovo
+                UserId = ObjectId.Parse("000000000000000000000000").ToString(),
+                //UserId = reservation.UserId, // TODO: zameniti ovo
                 StartDate = reservation.StartDate.Date,
                 EndDate = reservation.EndDate.Date,
                 TotalPrice = totalDaysReserved * vehicle.PricePerDay,
