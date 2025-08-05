@@ -104,6 +104,8 @@ Console.WriteLine($"MongoDB DatabaseName: {mongoSettings.DatabaseName}");
 builder.Services.AddScoped<VehicleService>();
 builder.Services.AddScoped<CountryService>();
 builder.Services.AddScoped<ReservationService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
 

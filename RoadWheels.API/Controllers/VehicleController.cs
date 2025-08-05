@@ -9,21 +9,23 @@ namespace RoadWheels.API.Controllers;
 
 [ApiController]
 [Route("Vehicle")]
+[Authorize(Roles = "Employee")]
 public class VehicleController(VehicleService vehicleService) : ControllerBase
 {
     private readonly VehicleService _vehicleService = vehicleService;
 
+    [AllowAnonymous]
     [HttpGet("GetAvailableVehiclesByLocation")]
     public async Task<IActionResult> GetAvailableVehiclesByLocation([FromQuery] VehicleSearchDto searchData)
     {
         var vehicles = await _vehicleService.GetAvailableVehiclesByLocationAsync(searchData);
-        if (vehicles.Count==0)
+        if (vehicles.Count == 0)
             return NotFound("No Vehicles found at this location");
 
         return Ok(vehicles);
     }
 
-    
+    [AllowAnonymous]
     [HttpGet("GetVehicleDetailsById/{type}/{id}")]
     public async Task<IActionResult> GetVehicleDetailsById(VehicleType type, string id)
     {
@@ -72,6 +74,6 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
             return Ok("Vehicle successfully deleted");
 
         return BadRequest("There was an error deleting the vehicle.");
-       
+
     }
 }

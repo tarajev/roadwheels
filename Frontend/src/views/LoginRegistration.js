@@ -14,7 +14,6 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
   const formRef = useRef(null); // Za click van forme
   const [isLoading, setIsLoading] = useState(false);
 
-  const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -28,13 +27,6 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [invalidEmail, setInvalidEmail] = useState(false);
-  const [invalidUsername, setInvalidUsername] = useState(false);
-  const [userTypeAuthor, setUserTypeAuthor] = useState(false);
-
-  const handleUsernameChange = (e) => {
-    setInvalidUsername(false);
-    setUserName(e.target.value); // Treba regex da se uradi
-  }
 
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)$/;
@@ -67,15 +59,9 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
   };
 
   const disableSubmit = () => {
-    if (!email || !password || !confirmPassword || !isEmailValid || !passwordMatch) {
+    if (!email || !password || !phoneNumber || !confirmPassword || !isEmailValid || !passwordMatch) {
       return true;
     }
-    if (userTypeAuthor && (!fullName && !phoneNumber)) {
-      return true;
-    }
-    else if (!userTypeAuthor && !userName)
-      return true;
-
     return false;
   };
 
@@ -98,48 +84,22 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
 
   const handleRegisterSubmit = async (event) => {
     event.preventDefault();
-    try {
-      await axios.get(APIUrl + `Auth/CheckEmail/${email}`);
-    } catch (err) {
-      setInvalidEmail(true);
-    }
-
-    if (!userTypeAuthor) {
-      try {
-        await axios.get(APIUrl + `User/GetUserByUsername/${userName}`);
-        setInvalidUsername(true);
-      } catch (err) {
-        setInvalidUsername(false);
-      }
-    }
-
-    if (!userTypeAuthor && !invalidEmail && !invalidUsername) {
       setIsLoading(true);
-      await axios.post(APIUrl + "User/AddUser", {
-        userName: userName,
-        email: email,
-        password: password
-      })
-        .then(response => {
-          exitRegistration();
-        })
-        .catch(err => console.log(err)); //ovde ako dodje do greške da se ispiše da se pokuša ponovo ili tako nesto
-      setIsLoading(false);
-    }
-    else if (userTypeAuthor && !invalidEmail) {
-      setIsLoading(true);
-      await axios.post(APIUrl + "Author/AddAuthor", {
+      await axios.post(APIUrl + "User/CreateUser", {
         email: email,
         password: password,
-        fullName: fullName,
+        name: fullName,
         phoneNumber: phoneNumber
       })
-        .then(response => {
+        .then(() => {
           exitRegistration();
-        })
-        .catch(err => console.log(err));
+        }
+        )
+        .catch(err => {
+          console.log(err);
+          setInvalidEmail(true);
+        }); //ovde ako dodje do greške da se ispiše da se pokuša ponovo ili tako nesto
       setIsLoading(false);
-    }
   }
 
   const exitRegistrationForm = () => {
@@ -187,16 +147,6 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
               alertCond={!!phoneError}
               alertText={phoneError}
             />
-            {!userTypeAuthor && (
-              <FormInput
-                text="Username"
-                required
-                value={userName}
-                onChange={handleUsernameChange}
-                alertCond={invalidUsername}
-                alertText={invalidUsername && "Username already exists"}
-              />
-            )}
             <FormInput
               text="Email"
               type="email"
@@ -296,24 +246,14 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
       email: email,
       password: password,
     })
-      .then(request => {
-        let data = { ...request.data };
+      .then(response => {
+       
+        console.log("auth login" + response.data.name);
 
-        let user = {
-          ...data.user,
-          jwtToken: data.jwtToken
-        };
-
-        delete user.password;
-
-        console.log(user);
-
-        contextSetUser(user);
+        contextSetUser(response.data);
 
         let now = new Date();
-        now.setHours(now.getHours() + 6);
-
-        localStorage.setItem('RoadWheelsUser', JSON.stringify(user));
+        localStorage.setItem('RoadWheelsUser', JSON.stringify(response.data));
         localStorage.setItem('RoadWheelsExpiryDate', now);
 
         handleLoginClick();

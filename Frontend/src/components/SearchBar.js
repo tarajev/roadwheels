@@ -5,11 +5,6 @@ import vehicleIcon from '../resources/img/vehicle-icon.png';
 import { useEffect, useState } from "react";
 
 export default function SearchBar({ onSearch, locations }) {
-    const countries2 = {
-        USA: ["New York", "Los Angeles", "Chicago"],
-        Germany: ["Berlin", "Munich", "Frankfurt"],
-        France: ["Paris", "Lyon", "Marseille"]
-    };
 
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedCity, setSelectedCity] = useState("City");
