@@ -5,11 +5,11 @@ import React from "react";
 const AuthorizationContext = React.createContext({
     APIUrl: "http://localhost:5000/",
     contextUser: {
-        username: "",
+        id: "",
+        name: "",
+        email: "",
         role: "Guest",
         jwtToken: "",
-        email: "",
-        subscribedCategories: [],
     },
     contextSetUser: () => { },
 });

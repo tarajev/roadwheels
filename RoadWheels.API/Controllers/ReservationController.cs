@@ -21,11 +21,11 @@ public class ReservationController(ReservationService reservationService) : Cont
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = "Failed to fetch reservations: " + ex.Message });
+            return BadRequest("Failed to fetch reservations.");
         }
     }
 
@@ -35,15 +35,15 @@ public class ReservationController(ReservationService reservationService) : Cont
         try
         {
             var id = await _reservationService.ReserveAVehicle(reservation);
-            return Ok(new { message = "Reservation created successfully with ID: " + id });
+            return Ok("Reservation created successfully with ID: " + id);
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = "Failed to create reservation: " + ex.Message });
+            return BadRequest("Failed to create reservation.");
         }
     }
 
@@ -53,15 +53,15 @@ public class ReservationController(ReservationService reservationService) : Cont
         try
         {
             await _reservationService.UpdateReservation(reservation);
-            return Ok(new { message = "Reservation updated successfully." });
+            return Ok("Reservation updated successfully.");
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = "Failed to update reservation: " + ex.Message });
+            return BadRequest("Failed to update reservation.");
         }
     }
 
@@ -71,15 +71,15 @@ public class ReservationController(ReservationService reservationService) : Cont
         try
         {
             await _reservationService.CancelReservation(reservationId);
-            return Ok(new { message = "Reservation cancelled successfully." });
+            return Ok("Reservation cancelled successfully.");
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = "Failed to cancel reservation: " + ex.Message });
+            return BadRequest("Failed to cancel reservation.");
         }
     }
 }

@@ -14,6 +14,7 @@ import gearIcon from '../resources/img/gearbox-icon.png'
 import locationIcon from '../resources/img/location-icon.png'
 import CalendarMonth from '../components/CalendarMonth';
 import ConfirmReservation from './ConfirmReservation';
+import VehicleReservations from '../components/VehicleReservations';
 
 export default function VehiclePage() {
   const { APIUrl, contextUser } = useContext(AuthorizationContext)
@@ -26,6 +27,7 @@ export default function VehiclePage() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [reservations, setReservations] = useState([]);
+  const [showReservation, setShowReservation] = useState(false);
 
   const settings = {
     dots: true,
@@ -58,17 +60,51 @@ export default function VehiclePage() {
   const getVehicleReservations = async () => {
     await axios.get(APIUrl + `Reservation/GetReservationsForVehicle/${vehicleId}`)
       .then(response => {
-        console.log(response);
         const parsed = response.data.map(r => {
+          const id = r.id;
+          const userId = r.userId;
           const start = new Date(r.startDate);
           const end = new Date(r.endDate);
           start.setHours(0, 0, 0, 0);
           end.setHours(0, 0, 0, 0);
-          return { start, end };
+          return { id, userId, start, end };
         });
         setReservations(parsed);
       })
-      .catch(error => console.error(error));
+      .catch(error => console.warn(error));
+  };
+
+  const onDeleteReservation = async (reservation) => {
+    if (!reservation) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const diffTime = reservation.start.getTime() - today.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    // Ako ne brise rezervaciju 2 dana pre pickup vozila, prikazi opciju za brisanje
+    if (diffDays > 2) {
+      const confirmed = window.confirm("Are you sure you want to delete this reservation?");
+      if (!confirmed) {
+        return;
+      }
+    }
+    else {
+      window.alert("You can only cancel a reservation 2 days in advance! You will still be charged if you don't pick up the vehicle.");
+      return;
+    }
+
+    await axios
+      .delete(APIUrl + `Reservation/CancelReservation/${reservation.id}`)
+      .then(() => {
+        alert("Reservation cancelled successfully.");
+        window.location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Failed to cancel reservation.");
+      });
   };
 
   useEffect(() => {
@@ -94,7 +130,7 @@ export default function VehiclePage() {
           exitPopup={() => setShowConfirmReservation(false)}
           startDate={startDate}
           endDate={endDate}
-          userID={"placeholder"} // TODO: srediti
+          userID={contextUser.id}
           vehicleID={vehicleId}
           vehicleType={vehicle.type}
           pricePerDay={vehicle.pricePerDay}
@@ -146,14 +182,17 @@ export default function VehiclePage() {
           <p className='sm:text-md md:text-lg lg: text-xl'>{vehicle.description}</p>
         </div>
 
-        <div className='p-2 flex flex-col mx-auto w-fit gap-5 items-center bg-[#f2f1e6] shadow-xl border border-[#c56d43] rounded-xl'>
-          <p className='text-4xl font-semibold opacity-50'>Looking to book this vehicle?</p>
-          <div className='flex gap-5 w-[52rem]'>
-            <CalendarMonth startDate={startDate} endDate={endDate} onDateSelect={handleDateSelect} reservations={reservations} />
-            <CalendarMonth startDate={startDate} endDate={endDate} onDateSelect={handleDateSelect} reservations={reservations} offset={1} />
-          </div>
-          <Button disabled={!startDate} onClick={() => setShowConfirmReservation(true)} className="py-3 px-16 h-fit rounded-lg text-xl">Book</Button>
-        </div>
+        {!showReservation
+          ? <Button onClick={() => setShowReservation(true)} className="flex mx-auto py-3 px-16 h-fit rounded-lg text-xl">Looking to book this vehicle?</Button>
+          : <VehicleReservations
+            startDate={startDate}
+            endDate={endDate}
+            handleDateSelect={handleDateSelect}
+            onDeleteReservation={onDeleteReservation}
+            reservations={reservations}
+            overlayRemove={setShowConfirmReservation}
+          />
+        }
       </Page>
     </>
   );

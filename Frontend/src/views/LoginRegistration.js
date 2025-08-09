@@ -84,22 +84,22 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
 
   const handleRegisterSubmit = async (event) => {
     event.preventDefault();
-      setIsLoading(true);
-      await axios.post(APIUrl + "User/CreateUser", {
-        email: email,
-        password: password,
-        name: fullName,
-        phoneNumber: phoneNumber
-      })
-        .then(() => {
-          exitRegistration();
-        }
-        )
-        .catch(err => {
-          console.log(err);
-          setInvalidEmail(true);
-        }); //ovde ako dodje do greške da se ispiše da se pokuša ponovo ili tako nesto
-      setIsLoading(false);
+    setIsLoading(true);
+    await axios.post(APIUrl + "User/CreateUser", {
+      email: email,
+      password: password,
+      name: fullName,
+      phoneNumber: phoneNumber
+    })
+      .then(() => {
+        exitRegistration();
+      }
+      )
+      .catch(err => {
+        console.log(err);
+        setInvalidEmail(true);
+      }); //ovde ako dodje do greške da se ispiše da se pokuša ponovo ili tako nesto
+    setIsLoading(false);
   }
 
   const exitRegistrationForm = () => {
@@ -247,11 +247,6 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
       password: password,
     })
       .then(response => {
-       
-        console.log("auth login" + response.data.name);
-
-        contextSetUser(response.data);
-
         let now = new Date();
         localStorage.setItem('RoadWheelsUser', JSON.stringify(response.data));
         localStorage.setItem('RoadWheelsExpiryDate', now);

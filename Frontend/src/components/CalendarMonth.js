@@ -1,6 +1,8 @@
 import { GetMonthName } from './BasicComponents';
+import { useContext } from 'react'
+import AuthorizationContext from '../context/AuthorizationContext'
 
-export default function CalendarMonth({ offset = 0, children, startDate, endDate, reservations, onDateSelect }) {
+export default function CalendarMonth({ offset = 0, children, startDate, endDate, reservations, onDateSelect, onDeleteReservation }) {
   return (
     <div className='pt-2 h-fit border-y-2 rounded-lg grid col-span-1 shadow-md w-full bg-gray-50'>
       <div className='flex flex-wrap justify-center w-full h-fit bg-[#669676] text-white'>
@@ -19,6 +21,7 @@ export default function CalendarMonth({ offset = 0, children, startDate, endDate
           startDate={startDate}
           endDate={endDate}
           onDateSelect={onDateSelect}
+          onDeleteReservation={onDeleteReservation}
           reservations={reservations}
         />
       </ul>
@@ -27,7 +30,9 @@ export default function CalendarMonth({ offset = 0, children, startDate, endDate
   );
 }
 
-function ListDays({ offset = 0, startDate, endDate, onDateSelect, reservations = [] }) {
+function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReservation, reservations = [] }) {
+  const { APIUrl, contextUser } = useContext(AuthorizationContext)
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -50,6 +55,7 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, reservations =
   };
 
   const isReserved = (d) => reservations.some(r => d >= r.start && d <= r.end);
+  const isUserReservation = (d) => reservations.some(r => d >= r.start && d <= r.end && r.userId === contextUser.id);
 
   const isSelected = (d) =>
     startDate
@@ -67,7 +73,7 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, reservations =
     return futureReservations.length > 0 ? futureReservations[0] : null;
   };
 
-  const handleClick = (day) => {
+  const ClickDayToReserve = (day) => {
     const d = normalize(new Date(year, month, day));
 
     if (!startDate || endDate || d < startDate) {
@@ -90,16 +96,26 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, reservations =
       {daysArray.map((day) => {
         const d = normalize(new Date(year, month, day));
         const reserved = isReserved(d);
-        const disabled = (offset === 0 && d <= today) || reserved;
+        const userReservation = isUserReservation(d);
+        const disabled = (offset === 0 && d <= today) || (reserved && !userReservation);
+
+        const relatedReservation = reservations.find(r => d >= r.start && d <= r.end && r.userId === contextUser.id);
+
+        const handleDayClick = () => {
+          if (!disabled && userReservation && relatedReservation)
+            onDeleteReservation(relatedReservation);
+          else
+            ClickDayToReserve(day);
+        };
 
         return (
           <button
             key={`${day}_${month}`}
             disabled={disabled}
-            onClick={() => handleClick(day)}
+            onClick={handleDayClick}
             className={`py-1 flex color-button-list items-center justify-center shadow-md 
               ${isSelected(d) ? "!bg-[#669676]" : ""} 
-              ${reserved ? "!bg-[#c54d43] !text-white cursor-not-allowed" : ""} 
+              ${reserved ? `${userReservation ? "!bg-yellow-500 text-white cursor-pointer hover:!bg-yellow-600" : "!text-white cursor-not-allowed !bg-[#c54d43]"}` : ""} 
               ${d.getTime() === today.getTime() ? "ring-1 ring-black" : ""}`}
           >
             {day}

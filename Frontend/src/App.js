@@ -9,22 +9,21 @@ import NotFound from './views/NotFound';
 
 export default function App() {
   const [contextUser, contextSetUser] = useState({
-    username: "",
-    role: "Guest",
-    jwtToken: "",
+    id: "",
+    name: "",
     email: "",
-    picture: "",
-    bio: ""
+    role: "Guest",
+    jwtToken: ""
   });
 
   const APIUrl = "http://localhost:5050/";
   const value = { APIUrl, contextUser, contextSetUser };
 
-  // var storageUser = localStorage.getItem("ReadfeedUser");
-  // if (contextUser.role === "Guest" && storageUser) {
-  //   var storageUserJson = JSON.parse(storageUser);
-  //   contextSetUser(storageUserJson);
-  // }
+  var storageUser = localStorage.getItem("RoadWheelsUser");
+  if (contextUser.role === "Guest" && storageUser) {
+    var storageUserJson = JSON.parse(storageUser);
+    contextSetUser(storageUserJson);
+  }
 
   return (
     <AuthorizationContext.Provider value={value}>
