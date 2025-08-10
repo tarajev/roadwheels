@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using RoadWheels.API.Services;
 using RoadWheels.API.Models;
 using RoadWheels.API.DTOs;
-using MongoDB.Bson;
 
 namespace RoadWheels.API.Controllers;
 
@@ -22,6 +21,36 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         if (vehicles.Count == 0)
             return NotFound("No Vehicles found at this location");
 
+        return Ok(vehicles);
+    }
+
+    // TODO: Dodao sam ovu metodu zbog employee panela, potrebno je da se makne AllowAnonymis
+    [AllowAnonymous]
+    [HttpGet("GetVehiclesByType")]
+    public async Task<IActionResult> GetVehiclesByType([FromQuery] string vehicleType, [FromQuery] int page)
+    {
+        var vehicles = await _vehicleService.GetVehiclesByTypeAsync(vehicleType, page);
+        if (vehicles.Count == 0)
+            return NotFound("No Vehicles found of this type.");
+
+        return Ok(vehicles);
+    }
+
+    // TODO: Dodao sam ovu metodu zbog employee panela, potrebno je da se makne AllowAnonymis
+    [AllowAnonymous]
+    [HttpGet("GetVehicleCounts")]
+    public async Task<IActionResult> GetVehicleCounts()
+    {
+        var vehicles = await _vehicleService.GetVehicleCountsAsync();
+        return Ok(vehicles);
+    }
+
+    // TODO: Dodao sam ovu metodu zbog employee panela, potrebno je da se makne AllowAnonymis
+    [AllowAnonymous]
+    [HttpGet("SearchVehicle")]
+    public async Task<IActionResult> GetVehicleCounts([FromQuery] string searchTerm, [FromQuery] string vehicleType, [FromQuery] int page)
+    {
+        var vehicles = await _vehicleService.SearchVehiclesAsync(searchTerm, vehicleType, page);
         return Ok(vehicles);
     }
 

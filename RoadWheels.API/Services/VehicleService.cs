@@ -64,6 +64,94 @@ namespace RoadWheels.API.Services
             return result;
         }
 
+        // Ovo si zaboravila Tara!!!
+        public async Task<List<Vehicle>> GetVehiclesByTypeAsync(string vehicleType, int page)
+        {
+            if (page < 0) page = 0;
+
+            if (!Enum.TryParse<VehicleType>(vehicleType, true, out var typeEnum))
+                throw new ArgumentException($"Invalid vehicle type: {vehicleType}");
+
+            var collection = GetCollectionByType(typeEnum);
+
+            // Svi vehicle IDs prosledjenog tipa
+            var vehicleIds = await collection
+                .Find(Builders<Vehicle>.Filter.Empty)
+                .Project(v => v.Id)
+                .ToListAsync();
+
+            if (vehicleIds.Count == 0)
+                return [];
+
+            // Sve Pending rezervacije za ta vozila
+            var pendingCounts = await _reservations
+                .Aggregate()
+                .Match(r => r.VehicleType == typeEnum && r.Status == ReservationStatus.Pending)
+                .Group(r => r.VehicleId, g => new
+                {
+                    VehicleId = g.Key,
+                    PendingCount = g.Count()
+                })
+                .ToListAsync();
+
+            // Optimizacija
+            var pendingCountMap = pendingCounts.ToDictionary(x => x.VehicleId, x => x.PendingCount);
+
+            var vehicles = await collection
+                .Find(Builders<Vehicle>.Filter.Empty)
+                .ToListAsync();
+
+            // Sortiraj vozila po tome koliko imaju Pending rezervacija
+            var sortedVehicles = vehicles
+                .OrderByDescending(v => pendingCountMap.TryGetValue(v.Id, out var count) ? count : 0)
+                .ThenByDescending(v => v.Year)
+                .Skip(page * 20)
+                .Take(20)
+                .ToList();
+
+            return sortedVehicles;
+        }
+
+        // i ovo! hahaha
+        public async Task<VehicleCounts> GetVehicleCountsAsync()
+        {
+            var carsCount = (int)await _cars.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
+            var campersCount = (int)await _campers.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
+            var motorcyclesCount = (int)await _touringMotorcycles.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
+            var bicyclesCount = (int)await _touringBikes.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
+
+            return new VehicleCounts(
+                Cars: carsCount,
+                Campers: campersCount,
+                Motorcycles: motorcyclesCount,
+                Bicycles: bicyclesCount
+            );
+        }
+
+        // a i ovo bogami hihi
+        public async Task<List<Vehicle>> SearchVehiclesAsync(string searchTerm, string vehicleType, int page)
+        {
+            if (page < 0) page = 0;
+
+            if (!Enum.TryParse<VehicleType>(vehicleType, true, out var typeEnum))
+                throw new ArgumentException($"Invalid vehicle type: {vehicleType}");
+
+            var collection = GetCollectionByType(typeEnum);
+
+            var filter = Builders<Vehicle>.Filter.Or(
+                Builders<Vehicle>.Filter.Regex(v => v.Brand, new MongoDB.Bson.BsonRegularExpression(searchTerm, "i")),
+                Builders<Vehicle>.Filter.Regex(v => v.Model, new MongoDB.Bson.BsonRegularExpression(searchTerm, "i"))
+            );
+
+            var vehicles = await collection.Find(filter)
+                .SortByDescending(v => v.Year)
+                .Skip(page * 20)
+                .Limit(20)
+                .ToListAsync();
+
+            return vehicles;
+        }
+
         /*TODO:
                 public async Task<List<VehicleInstance>> GetVehiclesNearUser()
                 {

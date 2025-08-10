@@ -138,61 +138,63 @@ export default function VehiclePage() {
       }
 
       <Page overlayActive={overlayActive} loading={true} overlayHandler={setOverlayActive}>
-        <div className="w-full max-w-2xl mx-auto">
-          {vehicle.imageUrls && <Slider {...settings}>
-            {vehicle?.imageUrls.map((url, index) => (
-              <div key={index}>
-                <img
-                  src={`http://localhost:5050${url}`}
-                  alt={`vehicle-${index}`}
-                  className="w-full h-80 object-contain rounded-md shadow"
-                />
-              </div>
-            ))}
-          </Slider>}
-        </div>
-
-        <div className="grid mb-2 p-4 mx-20 gap-4">
-          <span className="text-dark sm:text-2xl md:text-4xl font-bold">{vehicle.brand + " " + vehicle.model}</span>
-          <div className='flex text-dark gap-4 font-semibold sm:text-lg md:text-xl lg:text-2xl opacity-80'>
-            <span className="flex items-center">
-              <img src={seatIcon} alt="seats" className="w-6 h-6 mr-1" />
-              {vehicle.seats}
-            </span>
-            {vehicle.type !== "TouringBicycle" ? (
-              <>
-                <span className="flex items-center">
-                  <img src={fuelIcon} alt="fuel" className="w-5 h-5 mr-2" />
-                  {vehicle.fuelConsumption}
-                </span>
-                <span className="flex items-center">
-                  <img src={gearIcon} alt="transmission" className="w-6 h-6 mr-2" />
-                  {vehicle.transmission}
-                </span>
-              </>
-            ) : null}
-            <span className='flex opacity-80'>
-              <img src={locationIcon} alt="location" className="w-6 h-6 mr-2" />
-              {vehicle.city + ", " + vehicle.country}</span>
+        <div className='font-cambria'>
+          <div className="w-full max-w-2xl mx-auto">
+            {vehicle.imageUrls && <Slider {...settings}>
+              {vehicle?.imageUrls.map((url, index) => (
+                <div key={index}>
+                  <img
+                    src={`http://localhost:5050${url}`}
+                    alt={`vehicle-${index}`}
+                    className="w-full h-80 object-contain rounded-md shadow"
+                  />
+                </div>
+              ))}
+            </Slider>}
           </div>
-          <div className='flex'>
-            <span className="text-accent text-3xl font-bold">{vehicle.pricePerDay + "$"}</span>
-            <span className="text-dark text-xl mt-2 opacity-80">{"/day"}</span>
-          </div>
-          <p className='sm:text-md md:text-lg lg: text-xl'>{vehicle.description}</p>
-        </div>
 
-        {!showReservation
-          ? <Button onClick={() => setShowReservation(true)} className="flex mx-auto py-3 px-16 h-fit rounded-lg text-xl">Looking to book this vehicle?</Button>
-          : <VehicleReservations
-            startDate={startDate}
-            endDate={endDate}
-            handleDateSelect={handleDateSelect}
-            onDeleteReservation={onDeleteReservation}
-            reservations={reservations}
-            overlayRemove={setShowConfirmReservation}
-          />
-        }
+          <div className="grid mb-2 p-4 mx-20 gap-4">
+            <span className="text-dark sm:text-2xl md:text-4xl font-bold">{vehicle.brand + " " + vehicle.model}</span>
+            <div className='flex text-dark gap-4 font-semibold sm:text-lg md:text-xl lg:text-2xl opacity-80'>
+              <span className="flex items-center">
+                <img src={seatIcon} alt="seats" className="w-6 h-6 mr-1" />
+                {vehicle.seats}
+              </span>
+              {vehicle.type !== "TouringBicycle" ? (
+                <>
+                  <span className="flex items-center">
+                    <img src={fuelIcon} alt="fuel" className="w-5 h-5 mr-2" />
+                    {vehicle.fuelConsumption}
+                  </span>
+                  <span className="flex items-center">
+                    <img src={gearIcon} alt="transmission" className="w-6 h-6 mr-2" />
+                    {vehicle.transmission}
+                  </span>
+                </>
+              ) : null}
+              <span className='flex opacity-80'>
+                <img src={locationIcon} alt="location" className="w-6 h-6 mr-2" />
+                {vehicle.city + ", " + vehicle.country}</span>
+            </div>
+            <div className='flex'>
+              <span className="text-accent text-3xl font-bold">{vehicle.pricePerDay + "$"}</span>
+              <span className="text-dark text-xl mt-2 opacity-80">{"/day"}</span>
+            </div>
+            <p className='sm:text-md md:text-lg lg: text-xl'>{vehicle.description}</p>
+          </div>
+
+          {!showReservation
+            ? <Button onClick={() => setShowReservation(true)} className="flex mx-auto py-3 px-16 h-fit rounded-lg text-xl">Looking to book this vehicle?</Button>
+            : <VehicleReservations
+              startDate={startDate}
+              endDate={endDate}
+              handleDateSelect={handleDateSelect}
+              onDeleteReservation={onDeleteReservation}
+              reservations={reservations}
+              overlayRemove={setShowConfirmReservation}
+            />
+          }
+        </div>
       </Page>
     </>
   );

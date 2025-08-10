@@ -60,7 +60,7 @@ export function Page({ overlayActive, overlayHandler, children, loading = false,
       <PreloadHandler />
       <div className='bg-[#F7F5E8] min-h-screen'>
         {showHeader && <Header overlayActive={overlayActive} overlayHandler={overlayHandler} />}
-        <div className=" py-8 shadow-lg h-fit w-11/12  mx-auto" style={{ minHeight: `calc(100vh - 150px)` }}>
+        <div className="py-8 shadow-lg h-fit w-11/12 mx-auto" style={{ minHeight: `calc(100vh - 150px)` }}>
           {children}
         </div>
         <Footer />
@@ -185,7 +185,7 @@ export function Link({ route, disabled, href, onClick, preventTab, className, ch
       disabled={disabled}
       tabIndex={preventTab || disabled ? -1 : 0}
       onClick={disabled ? null : onClick}
-      className={`${disabled ? "text-gray-600 cursor-default" : "text-gray-400 cursor-pointer hover:underline"} outline-none ${className}`}
+      className={`${disabled ? "text-gray-400 cursor-default" : "text-orange cursor-pointer hover:underline"} outline-none ${className}`}
     >
       {children}
     </Goto>

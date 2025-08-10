@@ -71,13 +71,13 @@ body.preload * {
   }
 
   100% {
-    box-shadow: 0 8px 10px -1px #c56d43;
+    box-shadow: 0 8px 10px -1px #669676;
   }
 }
 
 @keyframes fadeOutShadow {
   0% {
-    box-shadow: 0 8px 10px -1px #c56d43;
+    box-shadow: 0 8px 10px -1px #669676;
   }
 
   100% {

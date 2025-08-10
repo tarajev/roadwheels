@@ -6,6 +6,7 @@ import './App.css';
 import MainPage from "./views/MainPage"
 import VehiclePage from "./views/VehiclePage"
 import NotFound from './views/NotFound';
+import EmployeePanel from './views/EmployeePanel';
 
 export default function App() {
   const [contextUser, contextSetUser] = useState({
@@ -31,6 +32,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/vehicle/:type/:vehicleId" element={<VehiclePage />} />
+          <Route path="/employeePanel" element={<EmployeePanel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

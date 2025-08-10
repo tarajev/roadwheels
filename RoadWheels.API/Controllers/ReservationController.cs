@@ -25,7 +25,7 @@ public class ReservationController(ReservationService reservationService) : Cont
         }
         catch (Exception ex)
         {
-            return BadRequest("Failed to fetch reservations.");
+            return BadRequest("Failed to fetch reservations.\n" + ex.Message);
         }
     }
 
@@ -43,7 +43,7 @@ public class ReservationController(ReservationService reservationService) : Cont
         }
         catch (Exception ex)
         {
-            return BadRequest("Failed to create reservation.");
+            return BadRequest("Failed to create reservation.\n" + ex.Message);
         }
     }
 
@@ -61,7 +61,7 @@ public class ReservationController(ReservationService reservationService) : Cont
         }
         catch (Exception ex)
         {
-            return BadRequest("Failed to update reservation.");
+            return BadRequest("Failed to update reservation.\n" + ex.Message);
         }
     }
 
@@ -79,7 +79,7 @@ public class ReservationController(ReservationService reservationService) : Cont
         }
         catch (Exception ex)
         {
-            return BadRequest("Failed to cancel reservation.");
+            return BadRequest("Failed to cancel reservation.\n" + ex.Message);
         }
     }
 }
