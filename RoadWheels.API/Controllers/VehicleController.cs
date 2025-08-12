@@ -65,6 +65,7 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         return Ok(vehicles);
     }
 
+    [AllowAnonymous] // TODO: Obrisati
     [HttpPost("CreateVehicle/{type}")]
     public async Task<IActionResult> CreateVehicle([FromRoute] VehicleType type, [FromBody] Vehicle vehicle)
     {
@@ -83,10 +84,10 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         }
     }
 
+    [AllowAnonymous] // TODO: Obrisati
     [HttpPut("UpdateVehicle")]
     public async Task<IActionResult> UpdateVehicle(VehicleDetailsDto vehicle)
     {
-
         var result = await _vehicleService.UpdateVehicleAsync(vehicle);
         if (result)
             return Ok(vehicle);
@@ -94,15 +95,14 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
             return BadRequest("There was an error updating the vehicle.");
     }
 
-    [HttpDelete("DeleteVehicle/{type}")]
+    [AllowAnonymous] // TODO: Obrisati
+    [HttpDelete("DeleteVehicle")]
     public async Task<IActionResult> DeleteVehicle(VehicleType type, string id, string country, string city)
     {
-
         var result = await _vehicleService.DeleteVehicleAsync(type, id, country, city);
         if (result)
             return Ok("Vehicle successfully deleted");
 
         return BadRequest("There was an error deleting the vehicle.");
-
     }
 }

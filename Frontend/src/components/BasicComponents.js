@@ -160,6 +160,27 @@ export function SelectableButton({ onClick, selected, preventTab, className, chi
   );
 }
 
+export function Dropdown({ label, options, value, onChange, required }) {
+  return (
+    <label className="block">
+      <span className={`text-md font-medium text-gray-900 ${required ? 'text-black' : 'text-gray-700'}`}>
+        {label} {required && <span className="text-red-600">*</span>}
+      </span>
+      <select
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value || null)}
+        required={required}
+        className="block w-full mt-1 rounded-md text-gray-900 font-medium bg-secondary border border-gray-800 p-2 focus:ring outline-none"
+      >
+        <option value="" disabled>-- Select --</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export function FormButton({ text, disabled, onClick, loading, className }) {
   return (
     <div className="mt-6">
@@ -395,6 +416,13 @@ export function EditableInput({ initialValue, preventTab, label, setValue }) {
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+export function Loader() {
+  return (
+    <div className='size-7 border-green border-t border-r rounded-full animate-spin'>
     </div>
   );
 }

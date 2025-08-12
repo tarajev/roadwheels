@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { Link } from "./BasicComponents";
+import { Loader } from "./BasicComponents";
 
-export default function VehicleTable({ selectedCard, vehicles, preventTab }) {
+export default function VehicleTable({ editVehicle, selectedCard, vehicles, preventTab }) {
   return (
     <table className="w-full">
       <thead>
@@ -18,12 +20,12 @@ export default function VehicleTable({ selectedCard, vehicles, preventTab }) {
           <th className="px-6 py-3"></th>
         </tr>
       </thead>
-      <TableBody selectedCard={selectedCard} vehicles={vehicles} preventTab={preventTab} />
+      <TableBody editVehicle={editVehicle} selectedCard={selectedCard} vehicles={vehicles} preventTab={preventTab} />
     </table>
   );
 }
 
-function TableBody({ selectedCard, vehicles, preventTab }) {
+function TableBody({ editVehicle, selectedCard, vehicles, preventTab }) {
   return (
     <>
       {vehicles.map((vehicle, index) => (
@@ -31,10 +33,7 @@ function TableBody({ selectedCard, vehicles, preventTab }) {
           <tr>
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
               <div className="flex items-center gap-2">
-                <img 
-                  class="w-10 h-7"
-                  src={`https://www.carlogos.org/car-logos/${vehicle.brand.toLowerCase()}-logo.png`}
-                />
+                <VehicleLogo vehicle={vehicle} />
                 <div className="text-sm font-medium leading-5 text-gray-900">
                   {vehicle.brand}
                 </div>
@@ -50,11 +49,50 @@ function TableBody({ selectedCard, vehicles, preventTab }) {
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.city}</td>
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.pricePerDay}$</td>
             <td className="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
-              <Link className="!text-green" preventTab={preventTab}>Edit</Link>
+              <Link className="!text-green" preventTab={preventTab} onClick={() => editVehicle(vehicle)}>Edit</Link>
             </td>
           </tr>
         </tbody>
       ))}
+    </>
+  );
+}
+
+
+function VehicleLogo({ vehicle }) {
+  const fallbackSrc = `https://cdn-0.motorcycle-logos.com/thumbs/Logo-${vehicle.brand}.png`;
+  const [imgSrc, setImgSrc] = useState(
+    `https://www.carlogos.org/car-logos/${vehicle.brand.toLowerCase()}-logo.png`
+  );
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setImgSrc(`https://www.carlogos.org/car-logos/${vehicle.brand.toLowerCase()}-logo.png`);
+    setLoading(true);
+  }, [vehicle.brand]);
+
+  return (
+    <>
+      {loading &&
+        <div className="w-10 h-7 flex justify-center">
+          <Loader />
+        </div>}
+        
+      <img
+        className="w-10 h-7"
+        src={imgSrc}
+        alt={`${vehicle.brand} logo`}
+        style={{ display: loading ? "none" : "block" }}
+        onLoad={() => setLoading(false)}
+        onError={() => {
+          if (imgSrc !== fallbackSrc) {
+            setImgSrc(fallbackSrc);
+            setLoading(true);
+          } else {
+            setLoading(false);
+          }
+        }}
+      />
     </>
   );
 }
