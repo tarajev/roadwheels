@@ -47,6 +47,20 @@ public class ReservationController(ReservationService reservationService) : Cont
         }
     }
 
+    [HttpPut("UpdateStatus/{reservationId}/{confirmed}")]
+    public async Task<IActionResult> UpdateStatus([FromRoute] string reservationId, [FromRoute] bool confirmed)
+    {
+        try
+        {
+            await _reservationService.UpdateStatus(reservationId, confirmed);
+            return Ok("Reservation status updated.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Failed to update reservation status: " + ex.Message);
+        }
+    }
+
     [HttpPut("UpdateReservation")]
     public async Task<IActionResult> UpdateReservation([FromBody] ReservationPostDto reservation)
     {

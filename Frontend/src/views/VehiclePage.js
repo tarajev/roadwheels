@@ -62,12 +62,13 @@ export default function VehiclePage() {
       .then(response => {
         const parsed = response.data.map(r => {
           const id = r.id;
+          const status = r.status;
           const userId = r.userId;
           const start = new Date(r.startDate);
           const end = new Date(r.endDate);
           start.setHours(0, 0, 0, 0);
           end.setHours(0, 0, 0, 0);
-          return { id, userId, start, end };
+          return { id, userId, start, end, status };
         });
         setReservations(parsed);
       })

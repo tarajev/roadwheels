@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "./BasicComponents";
 import { Loader } from "./BasicComponents";
+import VehicleReservationsEmployee from "./VehicleReservationsEmployee";
 
 export default function VehicleTable({ editVehicle, selectedCard, vehicles, preventTab }) {
   return (
     <table className="w-full">
       <thead>
-        <tr className='bg-accent uppercase color-accent text-left text-xs text-white font-medium leading-4'>
+        <tr className='from-accent bg-gradient-to-br to-orange uppercase color-accent text-left text-xs text-white font-medium leading-4'>
           <th className="px-6 py-3">Brand</th>
           <th className="px-6 py-3">Model</th>
           <th className="px-6 py-3">Year</th>
@@ -18,6 +19,7 @@ export default function VehicleTable({ editVehicle, selectedCard, vehicles, prev
           <th className="px-6 py-3">City</th>
           <th className="px-6 py-3">Price</th>
           <th className="px-6 py-3"></th>
+          <th className="px-6 py-3"></th>
         </tr>
       </thead>
       <TableBody editVehicle={editVehicle} selectedCard={selectedCard} vehicles={vehicles} preventTab={preventTab} />
@@ -26,10 +28,20 @@ export default function VehicleTable({ editVehicle, selectedCard, vehicles, prev
 }
 
 function TableBody({ editVehicle, selectedCard, vehicles, preventTab }) {
+  const [openVehicleIndex, setOpenVehicleIndex] = useState(null);
+
+  useEffect(() => {
+    setOpenVehicleIndex(null);
+  }, [selectedCard]);
+
+  const toggleDetails = (index) => {
+    setOpenVehicleIndex((prev) => (prev === index ? null : index));
+  };
+
   return (
     <>
       {vehicles.map((vehicle, index) => (
-        <tbody key={`${vehicle}_${index}`} className={index % 2 == 0 ? "bg-beige" : "bg-yellow-50"}>
+        <tbody key={`${vehicle}_${index}`} className={index % 2 === 0 ? "bg-beige" : "bg-yellow-50"}>
           <tr>
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
               <div className="flex items-center gap-2">
@@ -49,15 +61,27 @@ function TableBody({ editVehicle, selectedCard, vehicles, preventTab }) {
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.city}</td>
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.pricePerDay}$</td>
             <td className="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
+              <Link
+                className="!text-green"
+                preventTab={preventTab}
+                onClick={() => toggleDetails(index)}
+              >
+                {openVehicleIndex === index ? "Hide Reservations" : "Show Reservations"}
+              </Link>
+            </td>
+            <td className="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
               <Link className="!text-green" preventTab={preventTab} onClick={() => editVehicle(vehicle)}>Edit</Link>
             </td>
           </tr>
+
+          {openVehicleIndex === index && (
+            <VehicleReservationsEmployee vehicleId={vehicle.id} />
+          )}
         </tbody>
       ))}
     </>
   );
 }
-
 
 function VehicleLogo({ vehicle }) {
   const fallbackSrc = `https://cdn-0.motorcycle-logos.com/thumbs/Logo-${vehicle.brand}.png`;
@@ -67,8 +91,11 @@ function VehicleLogo({ vehicle }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setImgSrc(`https://www.carlogos.org/car-logos/${vehicle.brand.toLowerCase()}-logo.png`);
-    setLoading(true);
+    const newSrc = `https://www.carlogos.org/car-logos/${vehicle.brand.toLowerCase()}-logo.png`;
+    if (imgSrc !== newSrc) {
+      setImgSrc(newSrc);
+      setLoading(true);
+    }
   }, [vehicle.brand]);
 
   return (
@@ -77,7 +104,7 @@ function VehicleLogo({ vehicle }) {
         <div className="w-10 h-7 flex justify-center">
           <Loader />
         </div>}
-        
+
       <img
         className="w-10 h-7"
         src={imgSrc}

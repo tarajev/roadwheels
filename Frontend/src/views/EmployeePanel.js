@@ -40,8 +40,7 @@ export default function EmployeePanel() {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 600);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
-
+  
   const fetchVehiclesByType = () => {
     if (selectedCard == null || page == null) return;
 
@@ -65,7 +64,6 @@ export default function EmployeePanel() {
       })
       .then((response) => {
         setVehicles(response.data);
-        console.log(response.data);
 
         const setterMap = {
           Car: setCars,

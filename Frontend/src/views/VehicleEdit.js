@@ -8,6 +8,8 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
   const [formData, setFormData] = useState({ ...vehicle });
   const [loading, setLoading] = useState(false);
 
+  // TODO: Iz nekog razloga, edit deskripcije ne radi kako treba.
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -117,7 +119,6 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
             value={formData.description || ""}
             onChange={(e) => handleChange("description", e.target.value)}
           />
-
 
           <div className="flex justify-between">
             <div>

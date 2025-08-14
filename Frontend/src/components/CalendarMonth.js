@@ -1,8 +1,9 @@
 import { GetMonthName } from './BasicComponents';
 import { useContext } from 'react'
+import axios from 'axios';
 import AuthorizationContext from '../context/AuthorizationContext'
 
-export default function CalendarMonth({ offset = 0, children, startDate, endDate, reservations, onDateSelect, onDeleteReservation }) {
+export default function CalendarMonth({ offset = 0, employeeFlag, children, startDate, endDate, reservations, onDateSelect, onDeleteReservation }) {
   return (
     <div className='pt-2 h-fit border-y-2 rounded-lg grid col-span-1 shadow-md w-full bg-gray-50'>
       <div className='flex flex-wrap justify-center w-full h-fit bg-[#669676] text-white'>
@@ -23,6 +24,7 @@ export default function CalendarMonth({ offset = 0, children, startDate, endDate
           onDateSelect={onDateSelect}
           onDeleteReservation={onDeleteReservation}
           reservations={reservations}
+          employeeFlag={employeeFlag}
         />
       </ul>
       {children}
@@ -30,8 +32,26 @@ export default function CalendarMonth({ offset = 0, children, startDate, endDate
   );
 }
 
-function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReservation, reservations = [] }) {
-  const { APIUrl, contextUser } = useContext(AuthorizationContext)
+function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReservation, reservations = [], employeeFlag }) {
+  const { APIUrl, contextUser } = useContext(AuthorizationContext);
+
+  function confirmReservation(reservation) {
+    console.log(reservation);
+    const confirmed = reservation.status == 0;
+
+    if (window.confirm(`Are you sure you want to ${confirmed ? "confirm" : "cancel"}this pending reservation?`)) {
+      axios
+        .put(`${APIUrl}Reservation/UpdateStatus/${reservation.id}/${confirmed}`)
+        .then(response => {
+          alert(`Reservation ${confirmed ? "confirmed" : "cancelled"} successfully.`);
+          window.location.reload();
+        })
+        .catch(error => {
+          console.error(error);
+          alert("Failed to update reservation status.");
+        });
+    }
+  }
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -58,9 +78,9 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReserv
   const isUserReservation = (d) => reservations.some(r => d >= r.start && d <= r.end && r.userId === contextUser.id);
 
   const isSelected = (d) =>
-    startDate
-    && ((endDate && d >= normalize(startDate) && d <= normalize(endDate))
-      || (!endDate && d.getTime() === normalize(startDate).getTime()));
+    startDate &&
+    ((endDate && d >= normalize(startDate) && d <= normalize(endDate)) ||
+      (!endDate && d.getTime() === normalize(startDate).getTime()));
 
   const findConflict = (start, end) => {
     const s = normalize(start);
@@ -97,25 +117,50 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReserv
         const d = normalize(new Date(year, month, day));
         const reserved = isReserved(d);
         const userReservation = isUserReservation(d);
-        const disabled = (offset === 0 && d <= today) || (reserved && !userReservation);
-
         const relatedReservation = reservations.find(r => d >= r.start && d <= r.end && r.userId === contextUser.id);
 
+        const pastBooked = d < today && reserved && !userReservation;
+
+        let disabled;
+        if (employeeFlag) {
+          disabled = !reserved;
+        } else {
+          disabled = (offset === 0 && d <= today) || (reserved && !userReservation);
+        }
+
         const handleDayClick = () => {
-          if (!disabled && userReservation && relatedReservation)
-            onDeleteReservation(relatedReservation);
-          else
-            ClickDayToReserve(day);
+          if (employeeFlag) {
+            const reservationForDay = reservations.find(r => d >= r.start && d <= r.end);
+            if (reservationForDay) confirmReservation(reservationForDay);
+          } else {
+            if (!disabled && userReservation && relatedReservation)
+              onDeleteReservation(relatedReservation);
+            else
+              ClickDayToReserve(day);
+          }
         };
+
+        let reservationBg = "";
+        if (reserved) {
+          const reservationForDay = reservations.find(r => d >= r.start && d <= r.end);
+          if (pastBooked) {
+            reservationBg = "!bg-gray-300 text-gray-500 cursor-not-allowed";
+          } else {
+            reservationBg = reservationForDay.status === 0
+              ? "!bg-yellow-500 text-white cursor-pointer hover:!bg-yellow-600"
+              : "!bg-green text-white cursor-pointer hover:opacity-80";
+          }
+        }
 
         return (
           <button
             key={`${day}_${month}`}
             disabled={disabled}
             onClick={handleDayClick}
-            className={`py-1 flex color-button-list items-center justify-center shadow-md 
+            className={`py-1 flex color-button-list items-center justify-center shadow-md
+              ${d > today && disabled ? 'cursor-not-allowed !bg-accent' : ''} 
               ${isSelected(d) ? "!bg-[#669676]" : ""} 
-              ${reserved ? `${userReservation ? "!bg-yellow-500 text-white cursor-pointer hover:!bg-yellow-600" : "!text-white cursor-not-allowed !bg-[#c54d43]"}` : ""} 
+              ${reservationBg} 
               ${d.getTime() === today.getTime() ? "ring-1 ring-black" : ""}`}
           >
             {day}

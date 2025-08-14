@@ -15,7 +15,7 @@ namespace RoadWheels.API.Services
         public async Task<List<Reservation>> GetReservationsForVehicle(string vehicleId)
         {
             List<Reservation> reservations = await _reservations
-                .Find(r => r.VehicleId == vehicleId)
+                .Find(r => r.VehicleId == vehicleId && r.Status != ReservationStatus.Cancelled)
                 .ToListAsync();
 
             if (reservations.Count == 0)
@@ -32,7 +32,7 @@ namespace RoadWheels.API.Services
 
             if (reservation.StartDate.Date > reservation.EndDate.Date)
                 throw new ArgumentException("Start date cannot be after end date.");
-                
+
             var collection = _vehicleService.GetCollectionByType(reservation.VehicleType);
 
             Vehicle vehicle = await collection
@@ -94,6 +94,29 @@ namespace RoadWheels.API.Services
                 throw new Exception("Failed to update the reservation.");
         }
 
+        public async Task UpdateStatus(string reservationId, bool confirmed)
+        {
+            var reservation = await _reservations
+                .Find(r => r.Id == reservationId)
+                .FirstOrDefaultAsync()
+                ?? throw new NotFoundException("Reservation with the provided ID was not found.");
+
+            var newStatus = confirmed ? ReservationStatus.Confirmed : ReservationStatus.Cancelled;
+
+            if (reservation.Status == ReservationStatus.Cancelled)
+                throw new InvalidOperationException("Cannot change the status of a reservation that is already cancelled.");
+
+            var update = Builders<Reservation>.Update
+                .Set(r => r.Status, newStatus);
+
+            var result = await _reservations.UpdateOneAsync(
+                r => r.Id == reservationId,
+                update
+            );
+
+            if (result.ModifiedCount == 0)
+                throw new Exception("Failed to update the reservation status.");
+        }
 
         public async Task CancelReservation(string reservationId)
         {
