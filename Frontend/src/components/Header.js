@@ -67,13 +67,8 @@ export default function Header({ overlayActive, overlayHandler }) {
               }
               {contextUser.role == 2 ?
                 <div className="flex gap-2">
-                  <Link route="/employeePanel">
+                  <Link route="/employeePanel" className="!text-gray-400">
                     <div className="flex gap-2">
-                      <img
-                        src={iconWriteArticle}
-                        alt="Employee Panel"
-                        className="size-6"
-                      />
                       <p>Employee Panel</p>
                     </div>
                   </Link>

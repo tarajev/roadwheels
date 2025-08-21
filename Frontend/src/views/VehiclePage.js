@@ -58,7 +58,11 @@ export default function VehiclePage() {
   };
 
   const getVehicleReservations = async () => {
-    await axios.get(APIUrl + `Reservation/GetReservationsForVehicle/${vehicleId}`)
+    await axios.get(APIUrl + `Reservation/GetReservationsForVehicle/${vehicleId}`, {
+      headers: {
+        Authorization: `Bearer ${contextUser.jwtToken}`
+      }
+    })
       .then(response => {
         const parsed = response.data.map(r => {
           const id = r.id;
@@ -97,7 +101,11 @@ export default function VehiclePage() {
     }
 
     await axios
-      .delete(APIUrl + `Reservation/CancelReservation/${reservation.id}`)
+      .delete(APIUrl + `Reservation/CancelReservation/${reservation.id}`, {
+        headers: {
+          Authorization: `Bearer ${contextUser.jwtToken}`
+        }
+      })
       .then(() => {
         alert("Reservation cancelled successfully.");
         window.location.reload();
@@ -114,7 +122,11 @@ export default function VehiclePage() {
   }, [])
 
   const getVehicleDetails = async () => {
-    await axios.get(APIUrl + `Vehicle/GetVehicleDetailsById/${type}/${vehicleId}`)
+    await axios.get(APIUrl + `Vehicle/GetVehicleDetailsById/${type}/${vehicleId}`, {
+      headers: {
+        Authorization: `Bearer ${contextUser.jwtToken}`
+      }
+    })
       .then(response => {
         setVehicle(response.data);
         console.log(response.data.imageUrls);

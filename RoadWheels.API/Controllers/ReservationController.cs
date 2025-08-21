@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using RoadWheels.API.Services;
 using RoadWheels.API.DTOs;
 using RoadWheels.API.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RoadWheels.API.Controllers;
 
 [ApiController]
 [Route("Reservation")]
+//[Authorize(Roles = "Customer,Employee")]
 public class ReservationController(ReservationService reservationService) : ControllerBase
 {
     private readonly ReservationService _reservationService = reservationService;

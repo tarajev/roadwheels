@@ -64,8 +64,7 @@ namespace RoadWheels.API.Services
             return result;
         }
 
-        // Ovo si zaboravila Tara!!!
-        public async Task<List<Vehicle>> GetVehiclesByTypeAsync(string vehicleType, int page)
+        public async Task<List<VehiclesWithPendingRes>> GetVehiclesByTypeAsync(string vehicleType, int page)
         {
             if (page < 0) page = 0;
 
@@ -83,10 +82,16 @@ namespace RoadWheels.API.Services
             if (vehicleIds.Count == 0)
                 return [];
 
-            // Sve Pending rezervacije za ta vozila
+            var now = DateTime.UtcNow;
+
+            // Sve Pending rezervacije u buducnosti za ta vozila
             var pendingCounts = await _reservations
                 .Aggregate()
-                .Match(r => r.VehicleType == typeEnum && r.Status == ReservationStatus.Pending)
+                .Match(r =>
+                    r.VehicleType == typeEnum &&
+                    r.Status == ReservationStatus.Pending &&
+                    (r.StartDate > now || r.EndDate > now)
+                )
                 .Group(r => r.VehicleId, g => new
                 {
                     VehicleId = g.Key,
@@ -107,12 +112,15 @@ namespace RoadWheels.API.Services
                 .ThenByDescending(v => v.Year)
                 .Skip(page * 20)
                 .Take(20)
+                .Select(v => new VehiclesWithPendingRes(
+                    v,
+                    pendingCountMap.TryGetValue(v.Id, out var count) ? count : 0
+                ))
                 .ToList();
 
             return sortedVehicles;
         }
 
-        // i ovo! hahaha
         public async Task<VehicleCounts> GetVehicleCountsAsync()
         {
             var carsCount = (int)await _cars.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
@@ -128,7 +136,6 @@ namespace RoadWheels.API.Services
             );
         }
 
-        // a i ovo bogami hihi
         public async Task<List<Vehicle>> SearchVehiclesAsync(string searchTerm, string vehicleType, int page)
         {
             if (page < 0) page = 0;
@@ -221,7 +228,7 @@ namespace RoadWheels.API.Services
 
         public async Task<List<string>> UploadImages(string vehicleId, VehicleType type, List<IFormFile> files)
         {
-        
+
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
@@ -242,7 +249,7 @@ namespace RoadWheels.API.Services
                 imageUrls.Add(imageUrl);
             }
 
-            var _collection  = GetCollectionByType(type);
+            var _collection = GetCollectionByType(type);
             var filter = Builders<Vehicle>.Filter.Eq(c => c.Id, vehicleId);
             var update = Builders<Vehicle>.Update.PushEach(c => c.ImageUrls, imageUrls); //pusheach za dodavanje više elemenata odjednom
 

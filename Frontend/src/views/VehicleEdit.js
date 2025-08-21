@@ -8,8 +8,6 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
   const [formData, setFormData] = useState({ ...vehicle });
   const [loading, setLoading] = useState(false);
 
-  // TODO: Iz nekog razloga, edit deskripcije ne radi kako treba.
-
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -17,20 +15,13 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
   const handleUpdate = async () => {
     setLoading(true);
 
-    const changedFields = {};
-    Object.keys(formData).forEach((key) => {
-      if (formData[key] !== vehicle[key]) {
-        changedFields[key] = formData[key];
-      }
-    });
-
-    const payload = { ...vehicle, ...changedFields };
-
-    axios
-      .put(`${APIUrl}Vehicle/UpdateVehicle`, payload)
-      .then(() => {
-        window.location.reload();
+    await axios
+      .put(`${APIUrl}Vehicle/UpdateVehicle`, formData, {
+        headers: {
+          Authorization: `Bearer ${contextUser.jwtToken}`,
+        },
       })
+      .then(() => window.location.reload())
       .catch((error) => {
         console.error("Error updating vehicle:", error);
       });
@@ -39,13 +30,16 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
   };
 
   const deleteVehicle = async () => {
-    axios
+    await axios
       .delete(`${APIUrl}Vehicle/DeleteVehicle`, {
         params: {
           type: vehicle.type,
           id: vehicle.id,
           country: vehicle.country,
           city: vehicle.city
+        },
+        headers: {
+          Authorization: `Bearer ${contextUser.jwtToken}`
         }
       })
       .then(() => {
@@ -106,7 +100,7 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
           />
 
           <Checkbox
-            value={formData.needsRepair}
+            checked={formData.needsRepair}
             onChange={(e) => handleChange("needsRepair", e.target.checked)}
           >
             Needs Repair

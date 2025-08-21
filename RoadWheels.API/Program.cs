@@ -1,5 +1,6 @@
-
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -9,17 +10,21 @@ using MongoDB.Driver;
 using RoadWheels.API.Models;
 using RoadWheels.API.Services;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddMvc();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDirectoryBrowser();
-
 
 builder.Services.AddCors(options =>
     {
@@ -127,7 +132,6 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
 app.MapControllers();
 
 app.Run();

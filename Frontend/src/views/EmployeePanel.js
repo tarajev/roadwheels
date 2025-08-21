@@ -40,7 +40,7 @@ export default function EmployeePanel() {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 600);
-  
+
   const fetchVehiclesByType = () => {
     if (selectedCard == null || page == null) return;
 
@@ -60,7 +60,10 @@ export default function EmployeePanel() {
 
     axios
       .get(`${APIUrl}Vehicle/GetVehiclesByType`, {
-        params: { vehicleType: selectedCard, page }
+        params: { vehicleType: selectedCard, page },
+        headers: {
+          Authorization: `Bearer ${contextUser.jwtToken}`
+        }
       })
       .then((response) => {
         setVehicles(response.data);
@@ -109,14 +112,18 @@ export default function EmployeePanel() {
 
   useEffect(() => {
     axios
-      .get(APIUrl + "Vehicle/GetVehicleCounts")
+      .get(APIUrl + "Vehicle/GetVehicleCounts", {
+        headers: {
+          Authorization: `Bearer ${contextUser.jwtToken}`
+        }
+      })
       .then((response) => {
         setVehicleCounts(response.data);
       })
       .catch((error) => {
         console.error("Error fetching vehicle counts:", error);
       });
-  }, []);
+  }, [contextUser.jwtToken]);
 
   useEffect(() => {
     fetchVehiclesByType();
@@ -137,6 +144,9 @@ export default function EmployeePanel() {
           vehicleType: selectedCard,
           page: page,
         },
+        headers: {
+          Authorization: `Bearer ${contextUser.jwtToken}`
+        }
       })
       .then((response) => {
         setVehicles(response.data);

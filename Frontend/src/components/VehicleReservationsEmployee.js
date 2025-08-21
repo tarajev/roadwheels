@@ -6,12 +6,14 @@ import CalendarMonth from "./CalendarMonth";
 export default function VehicleReservationsEmployee({ vehicleId }) {
   const { APIUrl, contextUser } = useContext(AuthorizationContext);
   const [reservations, setReservations] = useState([]);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [reservation, setReservation] = useState(null);
-
   const getVehicleReservations = async () => {
-    await axios.get(APIUrl + `Reservation/GetReservationsForVehicle/${vehicleId}`)
+    await axios.get(APIUrl + `Reservation/GetReservationsForVehicle/${vehicleId}`, {
+      headers: {
+        Authorization: `Bearer ${contextUser.jwtToken}`
+      }
+    })
       .then(response => {
+        console.log(response.data);
         const parsed = response.data.map(r => {
           const id = r.id;
           const status = r.status;

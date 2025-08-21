@@ -5,7 +5,7 @@ import imagePlaceholder from '../resources/img/image-placeholder.png'
 import star from '../resources/img/star-rating.png'
 import AuthorizationContext from '../context/AuthorizationContext'
 import axios from 'axios'
-import DrawEditProfile from './EditProfile'
+// import DrawEditProfile from './EditProfile'
 import RideHistoryList from '../components/RideHistoryList'
 
 

@@ -18,11 +18,6 @@ public class UserController(UserService userService) : ControllerBase
     [HttpGet("GetUser/{id}")]
     public async Task<IActionResult> GetUser(string id)
     {
-        var jwtId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        Console.WriteLine("jwtId" + " : " + jwtId + " , id prosledjen: " + id);
-        if (jwtId != id)
-            return Unauthorized();
-
         var user = await _userService.GetUser(id);
         if (user == null)
             return BadRequest("Error - GetUser");

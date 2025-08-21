@@ -35,21 +35,39 @@ export default function CalendarMonth({ offset = 0, employeeFlag, children, star
 function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReservation, reservations = [], employeeFlag }) {
   const { APIUrl, contextUser } = useContext(AuthorizationContext);
 
-  function confirmReservation(reservation) {
-    console.log(reservation);
-    const confirmed = reservation.status == 0;
+  async function confirmReservation(reservation) {
+    try {
+      const userResponse = await axios.get(`${APIUrl}User/GetUser/${reservation.userId}`, {
+        headers: {
+          Authorization: `Bearer ${contextUser.jwtToken}`,
+        },
+      });
+      const user = userResponse.data;
 
-    if (window.confirm(`Are you sure you want to ${confirmed ? "confirm" : "cancel"}this pending reservation?`)) {
-      axios
-        .put(`${APIUrl}Reservation/UpdateStatus/${reservation.id}/${confirmed}`)
-        .then(response => {
-          alert(`Reservation ${confirmed ? "confirmed" : "cancelled"} successfully.`);
-          window.location.reload();
-        })
-        .catch(error => {
-          console.error(error);
-          alert("Failed to update reservation status.");
-        });
+      const confirmed = reservation.status === 0;
+
+      const message = `Are you sure you want to ${confirmed ? "confirm" : "cancel"} this reservation?\n\n` +
+        `User ID: ${user.id}\nName: ${user.name}`;
+
+      if (window.confirm(message)) {
+        axios
+          .put(`${APIUrl}Reservation/UpdateStatus/${reservation.id}/${confirmed}`, {
+            headers: {
+              Authorization: `Bearer ${contextUser.jwtToken}`
+            }
+          })
+          .then(() => {
+            alert(`Reservation ${confirmed ? "confirmed" : "cancelled"} successfully.`);
+            window.location.reload();
+          })
+          .catch(error => {
+            console.error(error);
+            alert("Failed to update reservation status.");
+          });
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to fetch user info.");
     }
   }
 

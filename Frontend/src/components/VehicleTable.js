@@ -22,12 +22,12 @@ export default function VehicleTable({ editVehicle, selectedCard, vehicles, prev
           <th className="px-6 py-3"></th>
         </tr>
       </thead>
-      <TableBody editVehicle={editVehicle} selectedCard={selectedCard} vehicles={vehicles} preventTab={preventTab} />
+      <TableBody editVehicle={editVehicle} selectedCard={selectedCard} vehiclesWithReservations={vehicles} preventTab={preventTab} />
     </table>
   );
 }
 
-function TableBody({ editVehicle, selectedCard, vehicles, preventTab }) {
+function TableBody({ editVehicle, selectedCard, vehiclesWithReservations, preventTab }) {
   const [openVehicleIndex, setOpenVehicleIndex] = useState(null);
 
   useEffect(() => {
@@ -40,42 +40,50 @@ function TableBody({ editVehicle, selectedCard, vehicles, preventTab }) {
 
   return (
     <>
-      {vehicles.map((vehicle, index) => (
-        <tbody key={`${vehicle}_${index}`} className={index % 2 === 0 ? "bg-beige" : "bg-yellow-50"}>
+      {vehiclesWithReservations.map((vehicleWithRes, index) => (
+        <tbody key={`${vehicleWithRes.vehicle.id}_${index}`} className={index % 2 === 0 ? "bg-beige" : "bg-yellow-50"}>
           <tr>
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
-              <div className="flex items-center gap-2">
-                <VehicleLogo vehicle={vehicle} />
+              <div className="flex items-center gap-2 relative">
+                <VehicleLogo vehicle={vehicleWithRes.vehicle} />
+
                 <div className="text-sm font-medium leading-5 text-gray-900">
-                  {vehicle.brand}
+                  {vehicleWithRes.vehicle.brand}
                 </div>
               </div>
             </td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.model}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.year}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.transmission}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.fuelConsumption}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.seats}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.needsRepair ? "Yes" : "No"}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.country}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.city}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicle.pricePerDay}$</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.model}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.year}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.transmission}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.fuelConsumption}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.seats}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.needsRepair ? "Yes" : "No"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.country}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.city}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.pricePerDay}$</td>
             <td className="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
               <Link
                 className="!text-green"
                 preventTab={preventTab}
                 onClick={() => toggleDetails(index)}
               >
-                {openVehicleIndex === index ? "Hide Reservations" : "Show Reservations"}
+                <div className="flex gap-2">
+                  {vehicleWithRes.reservations > 0 && (
+                    <span className="bg-green text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
+                      {vehicleWithRes.reservations}
+                    </span>
+                  )}
+                  {openVehicleIndex === index ? "Hide Reservations" : "Show Reservations"}
+                </div>
               </Link>
             </td>
             <td className="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
-              <Link className="!text-green" preventTab={preventTab} onClick={() => editVehicle(vehicle)}>Edit</Link>
+              <Link className="!text-green" preventTab={preventTab} onClick={() => editVehicle(vehicleWithRes.vehicle)}>Edit</Link>
             </td>
           </tr>
 
           {openVehicleIndex === index && (
-            <VehicleReservationsEmployee vehicleId={vehicle.id} />
+            <VehicleReservationsEmployee vehicleId={vehicleWithRes.vehicle.id} />
           )}
         </tbody>
       ))}

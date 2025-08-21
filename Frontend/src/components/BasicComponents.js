@@ -148,6 +148,63 @@ export function FileUpload({ className, width, height, text, buttonText, setPict
   );
 }
 
+export function MultiFileUpload({ className, width, height, text, buttonText, setPictures, limitInMegabytes = 2 }) {
+  const [fileNames, setFileNames] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+  });
+
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files);
+
+    const validFiles = files.filter(file => file.size < limitInMegabytes * 1000000);
+    const invalidFiles = files.filter(file => file.size >= limitInMegabytes * 1000000);
+
+    if (invalidFiles.length > 0) {
+      setErrorMessage(`Some files are too big! Limit is ${limitInMegabytes}MB each.`);
+    } else {
+      setErrorMessage('');
+    }
+
+    setFileNames(validFiles.map(f => f.name));
+    setPictures(validFiles);
+  };
+
+  return (
+    <div className={`flex flex-col items-center ${className}`}>
+      <MUIButton
+        style={{ height: height, width: width, backgroundColor: "#C77349", fontWeight: "600" }}
+        component="label"
+        variant="contained"
+        startIcon={<CloudUploadIcon />}
+      >
+        {buttonText}
+        <VisuallyHiddenInput type="file" multiple accept="image/png, image/jpeg" onChange={handleFileChange} />
+      </MUIButton>
+
+      <div className="mt-2">
+        <p>{text}</p>
+        {fileNames.length > 0 && (
+          <ul className="list-disc list-inside text-sm">
+            {fileNames.map((name, idx) => <li key={idx}>{name}</li>)}
+          </ul>
+        )}
+        {errorMessage && <p className='text-red-600'>{errorMessage}</p>}
+      </div>
+    </div>
+  );
+}
+
 export function SelectableButton({ onClick, selected, preventTab, className, children }) {
   return (
     <button
@@ -213,12 +270,12 @@ export function Link({ route, disabled, href, onClick, preventTab, className, ch
   );
 }
 
-export function Checkbox({ value, className, required, preventTab, children, onChange }) {
+export function Checkbox({ checked, className, required, preventTab, children, onChange }) {
   return (
     <label className={`inline-flex items-center ${className}`}>
       <input
         type="checkbox"
-        value={value}
+        checked={checked} // <-- use checked here, not value
         tabIndex={preventTab ? -1 : 0}
         onChange={onChange}
         className="focus:ring-2 ring-gray-600 accent-gray-600 outline-none hover:ring-2"

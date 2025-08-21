@@ -24,8 +24,6 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         return Ok(vehicles);
     }
 
-    // TODO: Dodao sam ovu metodu zbog employee panela, potrebno je da se makne AllowAnonymis
-    [AllowAnonymous]
     [HttpGet("GetVehiclesByType")]
     public async Task<IActionResult> GetVehiclesByType([FromQuery] string vehicleType, [FromQuery] int page)
     {
@@ -36,8 +34,6 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         return Ok(vehicles);
     }
 
-    // TODO: Dodao sam ovu metodu zbog employee panela, potrebno je da se makne AllowAnonymis
-    [AllowAnonymous]
     [HttpGet("GetVehicleCounts")]
     public async Task<IActionResult> GetVehicleCounts()
     {
@@ -45,8 +41,6 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         return Ok(vehicles);
     }
 
-    // TODO: Dodao sam ovu metodu zbog employee panela, potrebno je da se makne AllowAnonymis
-    [AllowAnonymous]
     [HttpGet("SearchVehicle")]
     public async Task<IActionResult> GetVehicleCounts([FromQuery] string searchTerm, [FromQuery] string vehicleType, [FromQuery] int page)
     {
@@ -65,7 +59,6 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         return Ok(vehicles);
     }
 
-    [AllowAnonymous] // TODO: Obrisati
     [HttpPost("CreateVehicle/{type}")]
     public async Task<IActionResult> CreateVehicle([FromRoute] VehicleType type, [FromBody] Vehicle vehicle)
     {
@@ -84,7 +77,6 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
         }
     }
 
-    [AllowAnonymous] // TODO: Obrisati
     [HttpPut("UpdateVehicle")]
     public async Task<IActionResult> UpdateVehicle(VehicleDetailsDto vehicle)
     {
@@ -95,7 +87,6 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
             return BadRequest("There was an error updating the vehicle.");
     }
 
-    [AllowAnonymous] // TODO: Obrisati
     [HttpDelete("DeleteVehicle")]
     public async Task<IActionResult> DeleteVehicle(VehicleType type, string id, string country, string city)
     {
