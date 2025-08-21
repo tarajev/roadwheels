@@ -16,7 +16,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DrawLoadingScreen from '../views/LoadingScreen';
 import AuthorizationContext from '../context/AuthorizationContext';
 
-export function Page({ overlayActive, overlayHandler, children, loading = false, timeout = 500 }) {
+export function Page({ overlayActive, overlayHandler, children, loading = false, timeout = 500, minHeight = true }) {
   const [pageLoading, setPageLoading] = useState(loading);
   const { contextUser, contextSetUser } = useContext(AuthorizationContext);
   const location = useLocation();
@@ -60,7 +60,7 @@ export function Page({ overlayActive, overlayHandler, children, loading = false,
       <PreloadHandler />
       <div className='bg-[#F7F5E8] min-h-screen'>
         {showHeader && <Header overlayActive={overlayActive} overlayHandler={overlayHandler} />}
-        <div className="py-8 shadow-lg h-fit w-11/12 mx-auto" style={{ minHeight: `calc(100vh - 150px)` }}>
+        <div className="py-8 shadow-lg h-fit w-11/12 mx-auto" style={minHeight ? { minHeight: `calc(100vh - 150px)` } : {}}>
           {children}
         </div>
         <Footer />

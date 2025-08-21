@@ -6,8 +6,6 @@ namespace RoadWheels.API.DTOs;
 
 public class UpdateUserDto
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
     public string? Name { get; set; }
     public string? NewPassword { get; set; } 

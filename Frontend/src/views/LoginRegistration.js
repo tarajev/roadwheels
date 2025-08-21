@@ -248,8 +248,10 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
     })
       .then(response => {
         let now = new Date();
+        const expiryDate = new Date(now.getTime() + 6 * 60 * 60 * 1000); 
         localStorage.setItem('RoadWheelsUser', JSON.stringify(response.data));
-        localStorage.setItem('RoadWheelsExpiryDate', now);
+        localStorage.setItem('RoadWheelsExpiryDate', expiryDate.toISOString());
+        contextSetUser({...response.data});
 
         handleLoginClick();
       })

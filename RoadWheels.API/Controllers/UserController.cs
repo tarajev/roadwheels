@@ -10,7 +10,7 @@ namespace RoadWheels.API.Controllers;
 
 [ApiController]
 [Route("User")]
-[Authorize(Roles = "Customer,Employee")]
+//[Authorize(Roles = "Customer,Employee")]
 public class UserController(UserService userService) : ControllerBase
 {
     private readonly UserService _userService = userService;
@@ -19,6 +19,7 @@ public class UserController(UserService userService) : ControllerBase
     public async Task<IActionResult> GetUser(string id)
     {
         var jwtId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        Console.WriteLine("jwtId" + " : " + jwtId + " , id prosledjen: " + id);
         if (jwtId != id)
             return Unauthorized();
 
@@ -39,6 +40,7 @@ public class UserController(UserService userService) : ControllerBase
         return Ok(user);
     }
 
+    [AllowAnonymous] //TODO: samo za customers
     [HttpPut("UpdateUser")]
     public async Task<IActionResult> Updateuser([FromBody] UpdateUserDto user)
     {
@@ -49,6 +51,7 @@ public class UserController(UserService userService) : ControllerBase
             return BadRequest("There was an error updating the user.");
     }
 
+    [AllowAnonymous] //TODO: samo za customers
     [HttpDelete("Deleteuser/{id}")]
     public async Task<IActionResult> Deleteuser(string id)
     {

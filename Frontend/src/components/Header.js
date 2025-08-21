@@ -56,27 +56,32 @@ export default function Header({ overlayActive, overlayHandler }) {
               <BurgerMenu preventTab={overlayActive} icon={iconBurger} listItemArray={burgerMenuItems} size={5} />
             </span>
             <span className="hidden lg:flex items-center mr-1 py-1 max-w-405">
-              {contextUser.$type === "Author" ?
+              {contextUser.role == 1 ? //može da se doda [BsonRepresentation(BsonType.String)] i da se čuva kao string
                 <div className="flex gap-2">
-                  <Link route="/createArticle">
-                    <div className="flex gap-2">
-                      <img
-                        src={iconWriteArticle}
-                        alt="Write Article"
-                        className="size-6"
-                      />
-                      <p>Write article</p>
-                    </div>
-                  </Link>
-                  <p className="text-gray-400">|</p>
-                  <Link className="!text-gray-400" route="/author/" param={contextUser.id}>
+                  <Link className="!text-gray-400" route="profile/" param={contextUser.id}>
                     Profile
                   </Link>
                   <p className="text-gray-400">|</p>
                 </div>
                 : <></>
               }
-              {contextUser.role === "Guest" ?
+              {contextUser.role == 2 ?
+                <div className="flex gap-2">
+                  <Link route="/employeePanel">
+                    <div className="flex gap-2">
+                      <img
+                        src={iconWriteArticle}
+                        alt="Employee Panel"
+                        className="size-6"
+                      />
+                      <p>Employee Panel</p>
+                    </div>
+                  </Link>
+                  <p className="text-gray-400">|</p>
+                </div>
+                : <></>
+              }
+              {contextUser.role == 0 ?
                 <Link className='mx-2 !text-gray-400' preventTab={overlayActive} onClick={handleLoginClick}>
                   Log in
                 </Link>

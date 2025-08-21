@@ -6,8 +6,6 @@ namespace RoadWheels.API.DTOs;
 
 public class VehiclePostDto
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } 
     public string City { get; set; } = "";
     public decimal PricePerDay { get; set; } = 0;

@@ -26,6 +26,8 @@ namespace RoadWheels.API.Services
 
         public async Task<string> ReserveAVehicle(ReservationPostDto reservation)
         {
+            Console.WriteLine($"VehicleType: {reservation.VehicleType}, VehicleId: {reservation.VehicleId}");
+
             DateTime today = DateTime.UtcNow.Date;
             if (reservation.StartDate.Date <= today)
                 throw new ArgumentException("Reservations must start at least one day in advance.");
@@ -137,5 +139,49 @@ namespace RoadWheels.API.Services
             if (result.DeletedCount == 0)
                 throw new Exception("Failed to delete the reservation.");
         }
+
+        public async Task<List<RideDto>> GetUsersReservations(string userId, int page = 1, int pageSize = 1)
+        {
+            var skip = (page - 1) * pageSize;
+
+            var reservations = await _reservations
+                .Find(r => r.UserId == userId)
+                .SortByDescending(r=>r.StartDate)
+                .Skip(skip)
+                .Limit(pageSize+1)
+                .ToListAsync();
+
+            var reservationsByType = reservations.GroupBy(r => r.VehicleType);
+            var result = new List<RideDto>();
+
+            foreach (var group in reservationsByType)
+            {
+                var collection = _vehicleService.GetCollectionByType(group.Key);
+                if (collection == null) continue;
+
+                var vehicleIds = group.Select(r => r.VehicleId).ToList();
+                var vehiclesList = await collection.Find(v => vehicleIds.Contains(v.Id)).ToListAsync();
+                var vehiclesDict = vehiclesList.ToDictionary(v => v.Id);
+
+                result.AddRange(group.Select(r =>
+                {
+                    vehiclesDict.TryGetValue(r.VehicleId, out var vehicle);
+                    return new RideDto
+                    {
+                        Status = r.Status.ToString(),
+                        StartDate = r.StartDate,
+                        EndDate = r.EndDate,
+                        TotalPrice = r.TotalPrice,
+                        City = vehicle?.City,
+                        Country = vehicle?.Country,
+                        VehicleBrand = vehicle?.Brand,
+                        VehicleModel = vehicle?.Model
+                    };
+                }));
+            }
+
+            return result;
+        }
+
     }
 }

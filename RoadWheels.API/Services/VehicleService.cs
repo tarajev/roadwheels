@@ -178,7 +178,7 @@ namespace RoadWheels.API.Services
                 ImageUrls = vehicle.ImageUrls,
                 Description = vehicle.Description,
                 Location = vehicle.Location,
-
+                Type = type
             };
         }
 
@@ -218,6 +218,38 @@ namespace RoadWheels.API.Services
         }
 
         #endregion CRUD
+
+        public async Task<List<string>> UploadImages(string vehicleId, VehicleType type, List<IFormFile> files)
+        {
+        
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var imageUrls = new List<string>();
+
+            foreach (var file in files)
+            {
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                var imageUrl = $"/images/{uniqueFileName}";
+                imageUrls.Add(imageUrl);
+            }
+
+            var _collection  = GetCollectionByType(type);
+            var filter = Builders<Vehicle>.Filter.Eq(c => c.Id, vehicleId);
+            var update = Builders<Vehicle>.Update.PushEach(c => c.ImageUrls, imageUrls); //pusheach za dodavanje više elemenata odjednom
+
+            await _collection.UpdateOneAsync(filter, update);
+
+            return imageUrls;
+        }
 
         public async Task<bool> IsAvailable(string vehicleId, DateTime requestedStart, DateTime requestedEnd)
         {

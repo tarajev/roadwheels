@@ -105,4 +105,15 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
 
         return BadRequest("There was an error deleting the vehicle.");
     }
+
+    [HttpPost("UploadVehicleImages/{vehicleId}/{vehicleType}")]
+    public async Task<IActionResult> UploadImages(string vehicleId, VehicleType vehicleType, List<IFormFile> files)
+    {
+        if (files == null || files.Count == 0)
+            return BadRequest("No files to upload.");
+
+        var imageUrls = await _vehicleService.UploadImages(vehicleId, vehicleType, files);
+
+        return Ok(new { imageUrls });
+    }
 }

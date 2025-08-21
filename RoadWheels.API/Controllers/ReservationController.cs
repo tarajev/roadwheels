@@ -96,4 +96,18 @@ public class ReservationController(ReservationService reservationService) : Cont
             return BadRequest("Failed to cancel reservation.\n" + ex.Message);
         }
     }
+
+    [HttpGet("GetUserReservations/{userId}/{page}")]
+    public async Task<IActionResult> GetUserReservations([FromRoute] string userId, int page = 1)
+    {
+        try
+        {
+            var reservations = await _reservationService.GetUsersReservations(userId, page);
+            return Ok(reservations);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Failed to fetch reservations.\n" + ex.Message);
+        }
+    }
 }
