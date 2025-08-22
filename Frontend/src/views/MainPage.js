@@ -31,6 +31,10 @@ export default function DrawMainPage() {
   const [searchParams, setSearchParams] = useState(null);
 
   useEffect(() => {
+    window.scrollTo({ top: 150, behavior: "smooth" }); 
+  }, []);
+
+  useEffect(() => {
     getAllCountries();
   }, [])
 
@@ -100,8 +104,8 @@ export default function DrawMainPage() {
         <div className='col-span-1 flex justify-center p-12'>
           <img src={mainImage} alt="Main visual" className='max-h-full mt-[-20px] object-cover' />
         </div>
+        <SearchBar onSearch={searchVehicles} locations={countries}></SearchBar>
       </div>
-      <SearchBar onSearch={searchVehicles} locations={countries}></SearchBar>
       <div className='flex flex-wrap mt-20 gap-4 justify-center '>
         {vehicles.map((vehicle) => (
           <VehiclePost vehicle={vehicle}></VehiclePost>

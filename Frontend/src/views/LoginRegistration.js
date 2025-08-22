@@ -240,27 +240,43 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
-
     setIsLoading(true);
-    await axios.post(APIUrl + "Auth/Login", {
-      email: email,
-      password: password,
-    })
-      .then(response => {
-        let now = new Date();
-        const expiryDate = new Date(now.getTime() + 6 * 60 * 60 * 1000); 
-        localStorage.setItem('RoadWheelsUser', JSON.stringify(response.data));
-        localStorage.setItem('RoadWheelsExpiryDate', expiryDate.toISOString());
-        contextSetUser({...response.data});
 
-        handleLoginClick();
-      })
-      .catch(error => {
-        console.log(error);
-        setLoginError("Pogrešan E-Mail ili šifra!");
-      })
-    setIsLoading(false);
-  }
+    try {
+      const response = await axios.post(APIUrl + "Auth/Login", {
+        email: email,
+        password: password,
+      });
+
+      let user = response.data;
+      console.log(user.role);
+      if (user.role === "Employee") {
+        const details = await axios.get(APIUrl + `User/GetUser/${user.id}`, {
+          headers: { Authorization: `Bearer ${user.jwtToken}` }
+        });
+
+        user = {
+          ...user,
+          country: details.data.country,
+          city: details.data.city
+        };
+      }
+
+      let now = new Date();
+      const expiryDate = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+      localStorage.setItem('RoadWheelsUser', JSON.stringify(user));
+      localStorage.setItem('RoadWheelsExpiryDate', expiryDate.toISOString());
+
+      contextSetUser(user);
+      handleLoginClick();
+    } catch (error) {
+      console.log(error);
+      setLoginError("Pogrešan E-Mail ili šifra!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)$/;

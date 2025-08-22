@@ -8,8 +8,10 @@ const AuthorizationContext = React.createContext({
         id: "",
         name: "",
         email: "",
-        role: 0,
+        role: "Guest",
         jwtToken: "",
+        country: null, // samo za employee
+        city: null,    // samo za employee
     },
     contextSetUser: () => { },
 });

@@ -14,7 +14,7 @@ export default function App() {
     id: "",
     name: "",
     email: "",
-    role: 0,
+    role: "Guest",
     jwtToken: ""
   });
 
@@ -25,8 +25,10 @@ export default function App() {
       id: "",
       name: "",
       email: "",
-      role: 0,
-      jwtToken: ""
+      role: "Guest",
+      jwtToken: "",
+      city: null,
+      country: null,
     });
     window.location.reload();
   };
@@ -36,7 +38,7 @@ export default function App() {
 
   var storageUser = localStorage.getItem("RoadWheelsUser");
   
-  if (contextUser.role == 0  && storageUser) {
+  if (contextUser.role == "Guest"  && storageUser) {
     var storageUserJson = JSON.parse(storageUser);
     contextSetUser(storageUserJson);
   }

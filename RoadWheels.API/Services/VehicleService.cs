@@ -64,7 +64,7 @@ namespace RoadWheels.API.Services
             return result;
         }
 
-        public async Task<List<VehiclesWithPendingRes>> GetVehiclesByTypeAsync(string vehicleType, int page)
+        public async Task<List<VehiclesWithPendingRes>> GetVehiclesByTypeAsync(string vehicleType, int page, string country, string city)
         {
             if (page < 0) page = 0;
 
@@ -73,9 +73,9 @@ namespace RoadWheels.API.Services
 
             var collection = GetCollectionByType(typeEnum);
 
-            // Svi vehicle IDs prosledjenog tipa
+            // Svi vehicle IDs prosledjenog tipa  da li je ovo neophodno? jer posle ponovo pribavljas sva vozila
             var vehicleIds = await collection
-                .Find(Builders<Vehicle>.Filter.Empty)
+                .Find(v => v.Country == country && v.City == city)
                 .Project(v => v.Id)
                 .ToListAsync();
 
@@ -103,7 +103,7 @@ namespace RoadWheels.API.Services
             var pendingCountMap = pendingCounts.ToDictionary(x => x.VehicleId, x => x.PendingCount);
 
             var vehicles = await collection
-                .Find(Builders<Vehicle>.Filter.Empty)
+                .Find(v => v.Country == country && v.City == city)
                 .ToListAsync();
 
             // Sortiraj vozila po tome koliko imaju Pending rezervacija
@@ -121,12 +121,14 @@ namespace RoadWheels.API.Services
             return sortedVehicles;
         }
 
-        public async Task<VehicleCounts> GetVehicleCountsAsync()
+        public async Task<VehicleCounts> GetVehicleCountsAsync(string country, string city)
         {
-            var carsCount = (int)await _cars.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
-            var campersCount = (int)await _campers.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
-            var motorcyclesCount = (int)await _touringMotorcycles.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
-            var bicyclesCount = (int)await _touringBikes.CountDocumentsAsync(Builders<Vehicle>.Filter.Empty);
+            var filter = Builders<Vehicle>.Filter.And(Builders<Vehicle>.Filter.Eq(v => v.City, city), Builders<Vehicle>.Filter.Eq(v => v.Country, country));
+
+            var carsCount = (int)await _cars.CountDocumentsAsync(filter);
+            var campersCount = (int)await _campers.CountDocumentsAsync(filter);
+            var motorcyclesCount = (int)await _touringMotorcycles.CountDocumentsAsync(filter);
+            var bicyclesCount = (int)await _touringBikes.CountDocumentsAsync(filter);
 
             return new VehicleCounts(
                 Cars: carsCount,

@@ -56,7 +56,7 @@ export default function Header({ overlayActive, overlayHandler }) {
               <BurgerMenu preventTab={overlayActive} icon={iconBurger} listItemArray={burgerMenuItems} size={5} />
             </span>
             <span className="hidden lg:flex items-center mr-1 py-1 max-w-405">
-              {contextUser.role == 1 ? //može da se doda [BsonRepresentation(BsonType.String)] i da se čuva kao string
+              {contextUser.role == "Customer" ? //može da se doda [BsonRepresentation(BsonType.String)] i da se čuva kao string
                 <div className="flex gap-2">
                   <Link className="!text-gray-400" route="profile/" param={contextUser.id}>
                     Profile
@@ -65,7 +65,7 @@ export default function Header({ overlayActive, overlayHandler }) {
                 </div>
                 : <></>
               }
-              {contextUser.role == 2 ?
+              {contextUser.role == "Employee" ?
                 <div className="flex gap-2">
                   <Link route="/employeePanel" className="!text-gray-400">
                     <div className="flex gap-2">
@@ -76,7 +76,7 @@ export default function Header({ overlayActive, overlayHandler }) {
                 </div>
                 : <></>
               }
-              {contextUser.role == 0 ?
+              {contextUser.role == "Guest" ?
                 <Link className='mx-2 !text-gray-400' preventTab={overlayActive} onClick={handleLoginClick}>
                   Log in
                 </Link>

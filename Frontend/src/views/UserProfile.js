@@ -5,18 +5,18 @@ import imagePlaceholder from '../resources/img/image-placeholder.png'
 import star from '../resources/img/star-rating.png'
 import AuthorizationContext from '../context/AuthorizationContext'
 import axios from 'axios'
-// import DrawEditProfile from './EditProfile'
+import DrawEditProfile from './EditProfile'
 import RideHistoryList from '../components/RideHistoryList'
 
 
 export default function DrawProfile() {
-  const [ShowChangeProfile, setShowChangeProfile] = useState(false);
+  const [showChangeProfile, setShowChangeProfile] = useState(false);
 
-  const { APIUrl, contextUser } = useContext(AuthorizationContext);
+  const { APIUrl, contextUser} = useContext(AuthorizationContext);
   const [user, setUser] = useState({});
   const [userRides, setUserRides] = useState([]);
   const [page, setPage] = useState(1);
-  const [ridesPerPage, setRidesPerPage] = useState(1);
+  const [ridesPerPage, setRidesPerPage] = useState(9);
   const [overlayActive, setOverlayActive] = useState(false); // Potrebno za prevenciju background-tabovanja kada je forma aktivna
   const { userID } = useParams();
   const [moreAvailable, setMoreAvailable] = useState(true);
@@ -28,15 +28,23 @@ export default function DrawProfile() {
   };
 
   const handleExitChangeProfileClick = () => {
-
+    setShowChangeProfile(false);
   };
 
+  const updateProfileInformation = (updatedUser) => {
+    setUser((prev) => ({
+      ...prev,
+      phoneNumber: updatedUser.phoneNumber,
+      name: updatedUser.name
+    }));
+  }
+
   useEffect(() => {
-    if (ShowChangeProfile)
+    if (showChangeProfile)
       setOverlayActive(true);
     else
       setOverlayActive(false);
-  }, [ShowChangeProfile])
+  }, [showChangeProfile])
 
   useEffect(() => {
     if (contextUser.jwtToken) {
@@ -101,7 +109,7 @@ export default function DrawProfile() {
 
   return (
     <Page loading={true} overlayActive={overlayActive} overlayHandler={setOverlayActive}>
-      {/*ShowChangeProfile && <DrawEditProfile handleExitClick={handleExitChangeProfileClick} user={user} />*/}
+      {showChangeProfile && <DrawEditProfile handleExitClick={handleExitChangeProfileClick} user={user} updateProfileInformation={updateProfileInformation} />}
       <div className='grid gap-4 grid-cols-12 bg-green bg-opacity-70  px-3 pt-3 pb-2 rounded-t-md'>
         <div className='col-span-9 sm:col-span-10 flex flex-col '>
           <div className='flex h-fit'>
@@ -148,7 +156,7 @@ export default function DrawProfile() {
 
   function InfoBlock({ obj }) {
     let keys = Object.keys(obj);
-    const exclude = ["id", "passwordHash", "role", "city", "country", "name"]
+    const exclude = ["id", "passwordHash", "password", "role", "city", "country", "name"]
     let render = keys.filter(keys => !exclude.includes(keys));
     const attributeType = {
       email: "Email",

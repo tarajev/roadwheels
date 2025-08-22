@@ -25,19 +25,19 @@ public class VehicleController(VehicleService vehicleService) : ControllerBase
     }
 
     [HttpGet("GetVehiclesByType")]
-    public async Task<IActionResult> GetVehiclesByType([FromQuery] string vehicleType, [FromQuery] int page)
+    public async Task<IActionResult> GetVehiclesByType([FromQuery] string vehicleType, [FromQuery] int page, [FromQuery] string country, [FromQuery] string city)
     {
-        var vehicles = await _vehicleService.GetVehiclesByTypeAsync(vehicleType, page);
+        var vehicles = await _vehicleService.GetVehiclesByTypeAsync(vehicleType, page, country, city);
         if (vehicles.Count == 0)
             return NotFound("No Vehicles found of this type.");
 
         return Ok(vehicles);
     }
 
-    [HttpGet("GetVehicleCounts")]
-    public async Task<IActionResult> GetVehicleCounts()
+    [HttpGet("GetVehicleCounts/{country}/{city}")]
+    public async Task<IActionResult> GetVehicleCounts([FromRoute] string country, [FromRoute] string city)
     {
-        var vehicles = await _vehicleService.GetVehicleCountsAsync();
+        var vehicles = await _vehicleService.GetVehicleCountsAsync(country, city);
         return Ok(vehicles);
     }
 

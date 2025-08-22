@@ -60,7 +60,7 @@ export default function EmployeePanel() {
 
     axios
       .get(`${APIUrl}Vehicle/GetVehiclesByType`, {
-        params: { vehicleType: selectedCard, page },
+        params: { vehicleType: selectedCard, page, country: contextUser.country, city: contextUser.city  },
         headers: {
           Authorization: `Bearer ${contextUser.jwtToken}`
         }
@@ -112,7 +112,7 @@ export default function EmployeePanel() {
 
   useEffect(() => {
     axios
-      .get(APIUrl + "Vehicle/GetVehicleCounts", {
+      .get(APIUrl + `Vehicle/GetVehicleCounts/${contextUser.country}/${contextUser.city}`, {
         headers: {
           Authorization: `Bearer ${contextUser.jwtToken}`
         }

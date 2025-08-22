@@ -21,7 +21,7 @@ export default function SearchBar({ onSearch, locations }) {
     };
 
     return (
-        <div className="absolute grid grid-cols-[45%_45%_10%] gap-4 bottom-[-65px] left-1/2 transform -translate-x-1/2 z-10 bg-white p-4 rounded-md shadow-md w-full sm:w-11/12 md:w-5/6 lg:w-4/5 xl:w-3/4">
+        <div className="absolute grid grid-cols-[45%_45%_10%] -bottom-10 gap-4 left-1/2 transform -translate-x-1/2 z-10 bg-white p-4 rounded-md shadow-md w-full sm:w-11/12 md:w-5/6 lg:w-4/5 xl:w-3/4">
             {/* Leva polovina */}
             <div className="grid grid-cols-3  gap-6 border-r-2 pr-4">
                 <div className="py-2 flex flex-col col-span-2">
