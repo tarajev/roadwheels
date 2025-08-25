@@ -127,6 +127,7 @@ export default function EmployeePanel() {
 
   useEffect(() => {
     fetchVehiclesByType();
+    setPage(0);
   }, [selectedCard, page]);
 
   useEffect(() => {
@@ -150,7 +151,6 @@ export default function EmployeePanel() {
       })
       .then((response) => {
         setVehicles(response.data);
-        console.log("Search results:", response.data);
       })
       .catch((error) => {
         setVehicles([]);

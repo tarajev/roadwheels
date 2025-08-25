@@ -197,7 +197,7 @@ export default function VehicleAdd({ onCancel }) {
                 />
 
                 <FormButton
-                  text="Add"
+                  text="Add photos"
                   disabled={!isValid() || loading}
                   loading={loading}
                   onClick={handleAdd}

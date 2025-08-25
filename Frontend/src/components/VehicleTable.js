@@ -48,7 +48,9 @@ function TableBody({ editVehicle, selectedCard, vehiclesWithReservations, preven
                 <VehicleLogo vehicle={vehicleWithRes.vehicle} />
 
                 <div className="text-sm font-medium leading-5 text-gray-900">
-                  {vehicleWithRes.vehicle.brand}
+                  <Link route={`/vehicle/${selectedCard}/${vehicleWithRes.vehicle.id}`}>
+                    {vehicleWithRes.vehicle.brand}
+                  </Link>
                 </div>
               </div>
             </td>

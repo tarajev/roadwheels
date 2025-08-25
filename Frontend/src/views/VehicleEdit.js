@@ -1,12 +1,13 @@
 import { useContext, useState } from "react";
 import axios from "axios";
 import AuthorizationContext from '../context/AuthorizationContext';
-import { FormInput, Checkbox, FormButton } from '../components/BasicComponents';
+import { FormInput, Checkbox, FormButton, MultiFileUpload } from '../components/BasicComponents';
 
 export default function VehicleEdit({ formRef, vehicle, onCancel }) {
   const { contextUser, APIUrl } = useContext(AuthorizationContext);
   const [formData, setFormData] = useState({ ...vehicle });
   const [loading, setLoading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -15,18 +16,45 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
   const handleUpdate = async () => {
     setLoading(true);
 
-    await axios
-      .put(`${APIUrl}Vehicle/UpdateVehicle`, formData, {
-        headers: {
-          Authorization: `Bearer ${contextUser.jwtToken}`,
-        },
-      })
-      .then(() => window.location.reload())
-      .catch((error) => {
-        console.error("Error updating vehicle:", error);
-      });
+    const hasVehicleChanged = JSON.stringify(vehicle) !== JSON.stringify(formData);
+    const hasImagesChanged = selectedFiles.length > 0;
 
-    setLoading(false);
+    try {
+      // Update vozila
+      if (hasVehicleChanged) {
+        await axios.put(`${APIUrl}Vehicle/UpdateVehicle`, formData, {
+          headers: {
+            Authorization: `Bearer ${contextUser.jwtToken}`,
+          },
+        });
+      }
+
+      // Dodavanje slika ako postoje
+      if (hasImagesChanged) {
+        const formDataUpload = new FormData();
+        selectedFiles.forEach(file => formDataUpload.append("files", file));
+
+        await axios.post(
+          `${APIUrl}Vehicle/UploadVehicleImages/${formData.id}/${formData.type}`,
+          formDataUpload,
+          {
+            headers: {
+              Authorization: `Bearer ${contextUser.jwtToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
+
+      window.location.reload();
+    }
+    catch (error) {
+      console.error("Error updating vehicle:", error);
+      alert("Failed to update vehicle.");
+    }
+    finally {
+      setLoading(false);
+    }
   };
 
   const deleteVehicle = async () => {
@@ -112,6 +140,16 @@ export default function VehicleEdit({ formRef, vehicle, onCancel }) {
             rows={3}
             value={formData.description || ""}
             onChange={(e) => handleChange("description", e.target.value)}
+          />
+
+          <MultiFileUpload
+            className="w-full mt-4"
+            width="100%"
+            height="40px"
+            text="Note: Uploading will add additional photos, not replace them."
+            buttonText="Add Photos"
+            setPictures={setSelectedFiles}
+            limitInMegabytes={5}
           />
 
           <div className="flex justify-between">

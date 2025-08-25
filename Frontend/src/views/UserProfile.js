@@ -8,7 +8,6 @@ import axios from 'axios'
 import DrawEditProfile from './EditProfile'
 import RideHistoryList from '../components/RideHistoryList'
 
-
 export default function DrawProfile() {
   const [showChangeProfile, setShowChangeProfile] = useState(false);
 
@@ -21,7 +20,6 @@ export default function DrawProfile() {
   const { userID } = useParams();
   const [moreAvailable, setMoreAvailable] = useState(true);
   const navigate = useNavigate();
-
 
   const handleChangeProfileClick = () => {
     setShowChangeProfile(true);
@@ -60,7 +58,6 @@ export default function DrawProfile() {
   }, [page])
 
   const getProfileData = async () => {
-    console.log("id:" + contextUser.id);
     await axios.get(APIUrl + `User/GetUser/${userID}`, {
       headers: {
         Authorization: `Bearer ${contextUser.jwtToken}`
@@ -71,7 +68,7 @@ export default function DrawProfile() {
         setUser(data)
       })
       .catch(error => {
-        console.log(error);
+        console.error(error);
         if (error.response) {
           switch (error.response.status) {
             case 401:
@@ -101,11 +98,9 @@ export default function DrawProfile() {
         setUserRides(request.data);
       })
       .catch(error => {
-        console.log(error);
+        console.error(error);
       })
   }
-
-
 
   return (
     <Page loading={true} overlayActive={overlayActive} overlayHandler={setOverlayActive}>

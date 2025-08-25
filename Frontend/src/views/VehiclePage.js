@@ -129,7 +129,6 @@ export default function VehiclePage() {
     })
       .then(response => {
         setVehicle(response.data);
-        console.log(response.data.imageUrls);
       })
       .catch(error => {
         console.error(error);

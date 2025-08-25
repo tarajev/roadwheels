@@ -44,7 +44,7 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReserv
       });
       const user = userResponse.data;
 
-      const confirmed = reservation.status === 0;
+      const confirmed = reservation.status === "Pending";
 
       const message = `Are you sure you want to ${confirmed ? "confirm" : "cancel"} this reservation?\n\n` +
         `User ID: ${user.id}\nName: ${user.name}`;
@@ -164,7 +164,7 @@ function ListDays({ offset = 0, startDate, endDate, onDateSelect, onDeleteReserv
           if (pastBooked) {
             reservationBg = "!bg-gray-300 text-gray-500 cursor-not-allowed";
           } else {
-            reservationBg = reservationForDay.status === 0
+            reservationBg = reservationForDay.status === "Pending"
               ? "!bg-yellow-500 text-white cursor-pointer hover:!bg-yellow-600"
               : "!bg-green text-white cursor-pointer hover:opacity-80";
           }

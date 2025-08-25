@@ -55,7 +55,7 @@ export default function DrawMainPage() {
         setCountries(formatted);
       })
       .catch(error => {
-        console.log(error);
+        console.error(error);
       })
   }
 
@@ -86,7 +86,7 @@ export default function DrawMainPage() {
       setVehicles(result.data);
     })
       .catch(error => {
-        console.log(error);
+        console.error(error);
         setVehicles([]);
         setShowNotFoundMessage(true);
       })

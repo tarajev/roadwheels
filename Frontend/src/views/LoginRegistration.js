@@ -96,7 +96,7 @@ export function DrawRegistration({ onLoginClick, exitRegistration, handleLoginCl
       }
       )
       .catch(err => {
-        console.log(err);
+        console.error(err);
         setInvalidEmail(true);
       }); //ovde ako dodje do greške da se ispiše da se pokuša ponovo ili tako nesto
     setIsLoading(false);
@@ -249,7 +249,6 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
       });
 
       let user = response.data;
-      console.log(user.role);
       if (user.role === "Employee") {
         const details = await axios.get(APIUrl + `User/GetUser/${user.id}`, {
           headers: { Authorization: `Bearer ${user.jwtToken}` }
@@ -271,7 +270,7 @@ export function DrawLogin({ onRegisterClick, handleLoginClick }) {
       contextSetUser(user);
       handleLoginClick();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setLoginError("Pogrešan E-Mail ili šifra!");
     } finally {
       setIsLoading(false);

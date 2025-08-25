@@ -13,7 +13,6 @@ export default function VehicleReservationsEmployee({ vehicleId }) {
       }
     })
       .then(response => {
-        console.log(response.data);
         const parsed = response.data.map(r => {
           const id = r.id;
           const status = r.status;
