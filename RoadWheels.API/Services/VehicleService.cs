@@ -138,10 +138,8 @@ namespace RoadWheels.API.Services
             );
         }
 
-        public async Task<List<Vehicle>> SearchVehiclesAsync(string searchTerm, string vehicleType, int page)
+        public async Task<List<VehiclesWithPendingRes>> SearchVehiclesAsync(string searchTerm, string vehicleType, int page)
         {
-            if (page < 0) page = 0;
-
             if (!Enum.TryParse<VehicleType>(vehicleType, true, out var typeEnum))
                 throw new ArgumentException($"Invalid vehicle type: {vehicleType}");
 
@@ -158,15 +156,36 @@ namespace RoadWheels.API.Services
                 .Limit(20)
                 .ToListAsync();
 
-            return vehicles;
-        }
+            var now = DateTime.UtcNow;
 
-        /*TODO:
-                public async Task<List<VehicleInstance>> GetVehiclesNearUser()
+            var vehicleIds = vehicles.Select(v => v.Id).ToList();
+
+            var pendingCounts = await _reservations
+                .Aggregate()
+                .Match(r =>
+                    r.VehicleType == typeEnum &&
+                    r.Status == ReservationStatus.Pending &&
+                    (r.StartDate > now || r.EndDate > now) &&
+                    vehicleIds.Contains(r.VehicleId)
+                )
+                .Group(r => r.VehicleId, g => new
                 {
+                    VehicleId = g.Key,
+                    PendingCount = g.Count()
+                })
+                .ToListAsync();
 
-                }
-        */
+            var pendingCountMap = pendingCounts.ToDictionary(x => x.VehicleId, x => x.PendingCount);
+
+            var result = vehicles
+                .Select(v => new VehiclesWithPendingRes(
+                    v,
+                    pendingCountMap.TryGetValue(v.Id, out var count) ? count : 0
+                ))
+                .ToList();
+
+            return result;
+        }
 
         public async Task<VehicleDetailsDto?> GetVehicleDetailsByIdAsync(VehicleType type, string id)
         {

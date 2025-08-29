@@ -196,7 +196,16 @@ export default function VehiclePage() {
           </div>
 
           {!showReservation
-            ? <Button onClick={() => setShowReservation(true)} className="flex mx-auto py-3 px-16 h-fit rounded-lg text-xl">Looking to book this vehicle?</Button>
+            ? <Button
+              onClick={() => setShowReservation(true)}
+              disabled={contextUser.role == "Guest"}
+              className="flex mx-auto py-3 px-16 h-fit rounded-lg text-xl">
+              {
+                contextUser.role == "Guest" 
+                ? "Log in to book this vehicle."
+                : "Looking to book this vehicle?"
+              }
+            </Button>
             : <VehicleReservations
               startDate={startDate}
               endDate={endDate}

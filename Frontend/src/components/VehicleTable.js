@@ -41,28 +41,28 @@ function TableBody({ editVehicle, selectedCard, vehiclesWithReservations, preven
   return (
     <>
       {vehiclesWithReservations.map((vehicleWithRes, index) => (
-        <tbody key={`${vehicleWithRes.vehicle.id}_${index}`} className={index % 2 === 0 ? "bg-beige" : "bg-yellow-50"}>
+        <tbody key={`${vehicleWithRes.vehicle?.id ?? index}_${index}`} className={index % 2 === 0 ? "bg-beige" : "bg-yellow-50"}>
           <tr>
             <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
               <div className="flex items-center gap-2 relative">
                 <VehicleLogo vehicle={vehicleWithRes.vehicle} />
 
                 <div className="text-sm font-medium leading-5 text-gray-900">
-                  <Link route={`/vehicle/${selectedCard}/${vehicleWithRes.vehicle.id}`}>
-                    {vehicleWithRes.vehicle.brand}
+                  <Link route={`/vehicle/${selectedCard}/${vehicleWithRes.vehicle?.id}`}>
+                    {vehicleWithRes.vehicle?.brand ?? "Unknown"}
                   </Link>
                 </div>
               </div>
             </td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.model}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.year}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.transmission}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.fuelConsumption}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.seats}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.needsRepair ? "Yes" : "No"}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.country}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.city}</td>
-            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle.pricePerDay}$</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.model ?? "-"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.year ?? "-"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.transmission ?? "-"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.fuelConsumption ?? "-"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.seats ?? "-"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.needsRepair ? "Yes" : "No"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.country ?? "-"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.city ?? "-"}</td>
+            <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap">{vehicleWithRes.vehicle?.pricePerDay ?? "-"}$</td>
             <td className="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
               <Link
                 className="!text-green"
@@ -94,19 +94,19 @@ function TableBody({ editVehicle, selectedCard, vehiclesWithReservations, preven
 }
 
 function VehicleLogo({ vehicle }) {
-  const fallbackSrc = `https://cdn-0.motorcycle-logos.com/thumbs/Logo-${vehicle.brand}.png`;
+  const fallbackSrc = `https://cdn-0.motorcycle-logos.com/thumbs/Logo-${vehicle?.brand ?? 'unknown'}.png`;
   const [imgSrc, setImgSrc] = useState(
-    `https://www.carlogos.org/car-logos/${vehicle.brand.toLowerCase()}-logo.png`
+    `https://www.carlogos.org/car-logos/${vehicle?.brand.toLowerCase() ?? 'unknown'}-logo.png`
   );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const newSrc = `https://www.carlogos.org/car-logos/${vehicle.brand.toLowerCase()}-logo.png`;
+    const newSrc = `https://www.carlogos.org/car-logos/${vehicle?.brand.toLowerCase() ?? 'unknown'}-logo.png`;
     if (imgSrc !== newSrc) {
       setImgSrc(newSrc);
       setLoading(true);
     }
-  }, [vehicle.brand]);
+  }, [vehicle?.brand]);
 
   return (
     <>
@@ -118,7 +118,7 @@ function VehicleLogo({ vehicle }) {
       <img
         className="w-10 h-7"
         src={imgSrc}
-        alt={`${vehicle.brand} logo`}
+        alt={`${vehicle?.brand ?? 'unknown'} logo`}
         style={{ display: loading ? "none" : "block" }}
         onLoad={() => setLoading(false)}
         onError={() => {

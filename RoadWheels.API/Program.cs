@@ -2,7 +2,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -12,7 +11,6 @@ using RoadWheels.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddMvc();
 builder.Services.AddControllers()
     .AddJsonOptions(o =>
@@ -32,7 +30,7 @@ builder.Services.AddCors(options =>
         {
             policy.AllowAnyHeader()
                   .AllowAnyMethod()
-                  .WithOrigins("http://localhost:5500", // TODO: Srediti CORS.
+                  .WithOrigins("http://localhost:5500",
                             "https://localhost:5500",
                             "http://127.0.0.1:5500",
                             "https://127.0.0.1:5500",
@@ -102,6 +100,7 @@ builder.Services.AddSingleton<IMongoDatabase>(s =>
     var settings = s.GetRequiredService<IOptions<RoadWheelsDatabaseSettings>>();
     return client.GetDatabase(settings.Value.DatabaseName);
 });
+
 var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<RoadWheelsDatabaseSettings>();
 Console.WriteLine($"MongoDB ConnectionString: {mongoSettings.ConnectionString}");
 Console.WriteLine($"MongoDB DatabaseName: {mongoSettings.DatabaseName}");
@@ -133,5 +132,17 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+try
+{
+    using var scope = app.Services.CreateScope();
+    var database = scope.ServiceProvider.GetRequiredService<IMongoDatabase>();
+    await MongoDbInitializer.InitIndexes(database);
+    Console.WriteLine("MongoDB indexes initialized successfully.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Failed to initialize MongoDB indexes: {ex.Message}");
+}
 
 app.Run();

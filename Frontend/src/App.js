@@ -8,6 +8,7 @@ import VehiclePage from "./views/VehiclePage"
 import NotFound from './views/NotFound';
 import EmployeePanel from './views/EmployeePanel';
 import UserProfile from './views/UserProfile'
+import Authorization from './components/Authorization';
 
 export default function App() {
   const [contextUser, contextSetUser] = useState({
@@ -18,7 +19,7 @@ export default function App() {
     jwtToken: ""
   });
 
-   const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
     contextSetUser({
@@ -37,8 +38,8 @@ export default function App() {
   const value = { APIUrl, contextUser, contextSetUser };
 
   var storageUser = localStorage.getItem("RoadWheelsUser");
-  
-  if (contextUser.role == "Guest"  && storageUser) {
+
+  if (contextUser.role == "Guest" && storageUser) {
     var storageUserJson = JSON.parse(storageUser);
     contextSetUser(storageUserJson);
   }
@@ -49,7 +50,11 @@ export default function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/vehicle/:type/:vehicleId" element={<VehiclePage />} />
-          <Route path="/employeePanel" element={<EmployeePanel />} />
+
+          <Route element={<Authorization requiredPermissions={["VIEW_MODERATOR"]} />}>
+            <Route path="/employeePanel" element={<EmployeePanel />} />
+          </Route>
+
           <Route path="/profile/:userID" element={<UserProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

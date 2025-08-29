@@ -11,7 +11,6 @@ import axios from 'axios';
 export default function DrawMainPage() {
   const { APIUrl, contextUser } = useContext(AuthorizationContext)
   const [overlayActive, setOverlayActive] = useState(false); // Potrebno za prevenciju background-tabovanja kada je forma aktivna
-  const vehicles1 = [{ id: "64b8fce7b0e6f67422a1c1a1", city: "Berlin", pricePerDay: 75.5, brand: "Volkswagen", model: "California", seats: 4, mainImage: "https://example.com/images/vw-california.jpg", type: "Camper", transmission: "Automatic", fuelConsumption: 9.5 }, { id: "64b8fce7b0e6f67422a1c1a2", city: "Paris", pricePerDay: 45, brand: "Renault", model: "Clio", seats: 5, mainImage: "https://example.com/images/renault-clio.jpg", type: "Car", transmission: "Manual", fuelConsumption: 5.8 }, { id: "64b8fce7b0e6f67422a1c1a3", city: "New York", pricePerDay: 120, brand: "Harley-Davidson", model: "Road King", seats: 2, mainImage: "https://example.com/images/harley-roadking.jpg", type: "TouringMotorbike", transmission: "Manual", fuelConsumption: 6.2 }, { id: "64b8fce7b0e6f67422a1c1a4", city: "Amsterdam", pricePerDay: 20, brand: "Gazelle", model: "Ultimate T10", seats: 1, mainImage: "https://example.com/images/gazelle-bike.jpg", type: "TouringBicycle" }];
 
   const vehicleTypeDisplayNames = {
     Camper: "Camper",
@@ -29,12 +28,9 @@ export default function DrawMainPage() {
   const [moreAvailable, setMoreAvailable] = useState(true);
   const [page, setPage] = useState(0);
   const [searchParams, setSearchParams] = useState(null);
-
+  
   useEffect(() => {
-    window.scrollTo({ top: 150, behavior: "smooth" }); 
-  }, []);
-
-  useEffect(() => {
+    window.scrollTo({ top: '450px', behavior: "smooth" }); 
     getAllCountries();
   }, [])
 
@@ -76,7 +72,6 @@ export default function DrawMainPage() {
       }
     }).then(result => {
       setShowNotFoundMessage(false);
-      //setVehicles(result.data);
       if (result.data.length > take) {
         setMoreAvailable(true);
         result.data.pop();
